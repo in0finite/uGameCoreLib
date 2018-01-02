@@ -38,7 +38,9 @@ namespace uGameCore {
 		}
 
 		static string GetTextForConsole2() {
-			return " time left: " + MapCycle.singleton.GetTimeLeftAsString ();
+			if (MapCycle.singleton.AutomaticMapChanging)
+				return " time left: " + MapCycle.singleton.GetTimeLeftAsString ();
+			return "";
 		}
 		
 

@@ -24,7 +24,9 @@ namespace uGameCore {
 		}
 
 		static string GetTextForConsole() {
-			return " round time: " + (int)(Time.time - RoundSystem.singleton.TimeWhenRoundStarted);
+			if (RoundSystem.EnableRoundSystem)
+				return " round time: " + (int)(Time.time - RoundSystem.singleton.TimeWhenRoundStarted);
+			return "";
 		}
 
 	}

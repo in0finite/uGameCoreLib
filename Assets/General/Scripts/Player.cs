@@ -124,6 +124,17 @@ namespace uGameCore {
 		}
 
 
+		public	static	IEnumerable<T>	GetComponentOnAllPlayers<T>() where T : Component {
+
+			foreach (var player in PlayerManager.players) {
+				var component = player.GetComponent<T> ();
+				if (component)
+					yield return component;
+			}
+
+		}
+
+
 		public	GameObject	GetControllingGameObject() {
 
 			if (null == this.PlayerGameObject) {

@@ -49,9 +49,13 @@ namespace uGameCore {
 
 						}
 					}
+				} else {
+					// we are on client, and there is no local player
+					m_currentlySpectatedObject = null;
 				}
 			} else if (NetworkManager.singleton.IsServer ()) {
-				
+				// we are on dedicated server
+
 				if (null == m_currentlySpectatedObject || null == m_currentlySpectatedObject.GetControllingGameObject()) {
 					// we are not spectating anyone
 					// find object for spectating
@@ -61,6 +65,13 @@ namespace uGameCore {
 			}
 
 
+			// just in case
+			if (m_currentlySpectatedObject) {
+				if (!m_currentlySpectatedObject.GetControllingGameObject ()) {
+					// controlling game object of spectated player is dead
+					m_currentlySpectatedObject = null;
+				}
+			}
 
 		}
 
