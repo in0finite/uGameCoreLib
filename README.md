@@ -5,7 +5,7 @@ Library for [uGameCore](https://github.com/in0finite/uGameCore).
 
 ### Compiling
 
-Open monodevelop project.
+Open monodevelop solution.
 
 Add references to unity's libraries:
 - UnityEngine.dll
@@ -20,6 +20,8 @@ We do this by invoking a method from weaver's library, as it can be seen [here](
 
 After the library is weaved, copy it to your unity project, at the same location as the original library (Assets/uGameCore/Plugins/uGameCore.dll).
 
-Note that UnityEngine.Networking.dll must be in the same folder as the library, or otherwise NetworkBehaviour scripts from the library will not be recognized (that is unity's limitation, not ours).
-
 And you are good to go.
+
+### Any questions ?
+- post an issue or email me
+
