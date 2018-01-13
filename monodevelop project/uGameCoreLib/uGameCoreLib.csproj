@@ -23,4 +23,761 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Assets\Bridges.meta">
+      <Link>Bridges.meta</Link>
+    </None>
+    <None Include="..\..\Assets\CVars.meta">
+      <Link>CVars.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Chat.meta">
+      <Link>Chat.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Commands.meta">
+      <Link>Commands.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Console.meta">
+      <Link>Console.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Editor.meta">
+      <Link>Editor.meta</Link>
+    </None>
+    <None Include="..\..\Assets\GamePlay.meta">
+      <Link>GamePlay.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General.meta">
+      <Link>General.meta</Link>
+    </None>
+    <None Include="..\..\Assets\KillEvents.meta">
+      <Link>KillEvents.meta</Link>
+    </None>
+    <None Include="..\..\Assets\MapManagement.meta">
+      <Link>MapManagement.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Menu.meta">
+      <Link>Menu.meta</Link>
+    </None>
+    <None Include="..\..\Assets\RoundSystem.meta">
+      <Link>RoundSystem.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Score.meta">
+      <Link>Score.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Settings.meta">
+      <Link>Settings.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Teams.meta">
+      <Link>Teams.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities.meta">
+      <Link>Utilities.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\Scripts.meta">
+      <Link>Bridges\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\SettingsMenu.meta">
+      <Link>Bridges\SettingsMenu.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\Scripts\ChatCommands.cs.meta">
+      <Link>Bridges\Scripts\ChatCommands.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\Scripts\Console2Commands.cs.meta">
+      <Link>Bridges\Scripts\Console2Commands.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\Scripts\MapCommands.cs.meta">
+      <Link>Bridges\Scripts\MapCommands.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\Scripts\MapCycle2Console.cs.meta">
+      <Link>Bridges\Scripts\MapCycle2Console.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\Scripts\RoundCommands.cs.meta">
+      <Link>Bridges\Scripts\RoundCommands.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\Scripts\RoundSystem2Chat.cs.meta">
+      <Link>Bridges\Scripts\RoundSystem2Chat.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\Scripts\RoundSystem2Console.cs.meta">
+      <Link>Bridges\Scripts\RoundSystem2Console.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\Scripts\TeamChoose2Windows.cs.meta">
+      <Link>Bridges\Scripts\TeamChoose2Windows.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\Scripts\TeamCommands.cs.meta">
+      <Link>Bridges\Scripts\TeamCommands.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\Scripts\WindowCommands.cs.meta">
+      <Link>Bridges\Scripts\WindowCommands.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\SettingsMenu\Scripts.meta">
+      <Link>Bridges\SettingsMenu\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\SettingsMenu\Scripts\ButtonControllerSettingsMenu.cs.meta">
+      <Link>Bridges\SettingsMenu\Scripts\ButtonControllerSettingsMenu.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\SettingsMenu\Scripts\SettingsMenu.cs.meta">
+      <Link>Bridges\SettingsMenu\Scripts\SettingsMenu.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\SettingsMenu\Scripts\SettingsMenuSliderLabelUpdate.cs.meta">
+      <Link>Bridges\SettingsMenu\Scripts\SettingsMenuSliderLabelUpdate.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Bridges\SettingsMenu\Scripts\UpdateSettingsMenuWhenItIsOpened.cs.meta">
+      <Link>Bridges\SettingsMenu\Scripts\UpdateSettingsMenuWhenItIsOpened.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\CVars\Scripts.meta">
+      <Link>CVars\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\CVars\Scripts\CVarManager.cs.meta">
+      <Link>CVars\Scripts\CVarManager.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Chat\Scripts.meta">
+      <Link>Chat\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Chat\Scripts\ButtonControllerChat.cs.meta">
+      <Link>Chat\Scripts\ButtonControllerChat.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Chat\Scripts\ChatArea.cs.meta">
+      <Link>Chat\Scripts\ChatArea.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Chat\Scripts\ChatManager.cs.meta">
+      <Link>Chat\Scripts\ChatManager.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Chat\Scripts\ChatSync.cs.meta">
+      <Link>Chat\Scripts\ChatSync.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Commands\Scripts.meta">
+      <Link>Commands\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Commands\Scripts\CommandManager.cs.meta">
+      <Link>Commands\Scripts\CommandManager.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Commands\Scripts\DefaultCommands.cs.meta">
+      <Link>Commands\Scripts\DefaultCommands.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Console\Scripts.meta">
+      <Link>Console\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Console\Scripts\Console.cs.meta">
+      <Link>Console\Scripts\Console.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Editor\PlayFromFirstScene.cs.meta">
+      <Link>Editor\PlayFromFirstScene.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Editor\RandomObjectGeneratorWindow.cs.meta">
+      <Link>Editor\RandomObjectGeneratorWindow.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\GamePlay\Projectiles.meta">
+      <Link>GamePlay\Projectiles.meta</Link>
+    </None>
+    <None Include="..\..\Assets\GamePlay\Scripts.meta">
+      <Link>GamePlay\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\GamePlay\Projectiles\Scripts.meta">
+      <Link>GamePlay\Projectiles\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\GamePlay\Projectiles\Scripts\Bullet.cs.meta">
+      <Link>GamePlay\Projectiles\Scripts\Bullet.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\GamePlay\Projectiles\Scripts\BulletAfterFireSoundStarter.cs.meta">
+      <Link>GamePlay\Projectiles\Scripts\BulletAfterFireSoundStarter.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\GamePlay\Projectiles\Scripts\ProjectileDamageHandler.cs.meta">
+      <Link>GamePlay\Projectiles\Scripts\ProjectileDamageHandler.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\GamePlay\Scripts\Explosion.cs.meta">
+      <Link>GamePlay\Scripts\Explosion.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\GamePlay\Scripts\SoundDetach.cs.meta">
+      <Link>GamePlay\Scripts\SoundDetach.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts.meta">
+      <Link>General\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\CameraController.cs.meta">
+      <Link>General\Scripts\CameraController.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\ChangeStartupScene.cs.meta">
+      <Link>General\Scripts\ChangeStartupScene.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\CmdLineArgumentsProcessor.cs.meta">
+      <Link>General\Scripts\CmdLineArgumentsProcessor.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\ControllableObject.cs.meta">
+      <Link>General\Scripts\ControllableObject.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\Damagable.cs.meta">
+      <Link>General\Scripts\Damagable.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\GameManager.cs.meta">
+      <Link>General\Scripts\GameManager.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\InflictedDamageReporter.cs.meta">
+      <Link>General\Scripts\InflictedDamageReporter.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\NetworkEventsDispatcher.cs.meta">
+      <Link>General\Scripts\NetworkEventsDispatcher.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\NetworkEventsProcessExample.cs.meta">
+      <Link>General\Scripts\NetworkEventsProcessExample.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\NetworkStatus.cs.meta">
+      <Link>General\Scripts\NetworkStatus.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\Player.cs.meta">
+      <Link>General\Scripts\Player.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\PlayerManager.cs.meta">
+      <Link>General\Scripts\PlayerManager.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\PlayingObjectSpawner.cs.meta">
+      <Link>General\Scripts\PlayingObjectSpawner.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\SceneChanger.cs.meta">
+      <Link>General\Scripts\SceneChanger.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\SceneManagerEventsForwarder.cs.meta">
+      <Link>General\Scripts\SceneManagerEventsForwarder.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\Score.cs.meta">
+      <Link>General\Scripts\Score.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\SpawnPoint.cs.meta">
+      <Link>General\Scripts\SpawnPoint.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\Spectator.cs.meta">
+      <Link>General\Scripts\Spectator.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\General\Scripts\StartupSingletonObject.cs.meta">
+      <Link>General\Scripts\StartupSingletonObject.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\KillEvents\Prefabs.meta">
+      <Link>KillEvents\Prefabs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\KillEvents\Scripts.meta">
+      <Link>KillEvents\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\KillEvents\Prefabs\Kill Events Display.prefab">
+      <Link>KillEvents\Prefabs\Kill Events Display.prefab</Link>
+    </None>
+    <None Include="..\..\Assets\KillEvents\Prefabs\Kill Events Display.prefab.meta">
+      <Link>KillEvents\Prefabs\Kill Events Display.prefab.meta</Link>
+    </None>
+    <None Include="..\..\Assets\KillEvents\Prefabs\KillEventText.prefab">
+      <Link>KillEvents\Prefabs\KillEventText.prefab</Link>
+    </None>
+    <None Include="..\..\Assets\KillEvents\Prefabs\KillEventText.prefab.meta">
+      <Link>KillEvents\Prefabs\KillEventText.prefab.meta</Link>
+    </None>
+    <None Include="..\..\Assets\KillEvents\Scripts\KillEventSync.cs.meta">
+      <Link>KillEvents\Scripts\KillEventSync.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\KillEvents\Scripts\KillEventUI.cs.meta">
+      <Link>KillEvents\Scripts\KillEventUI.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\MapManagement\Scripts.meta">
+      <Link>MapManagement\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\MapManagement\Scripts\ButtonControllerMapCycle.cs.meta">
+      <Link>MapManagement\Scripts\ButtonControllerMapCycle.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\MapManagement\Scripts\DisplayMapImageWhenMapIsSelected.cs.meta">
+      <Link>MapManagement\Scripts\DisplayMapImageWhenMapIsSelected.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\MapManagement\Scripts\MapCycle.cs.meta">
+      <Link>MapManagement\Scripts\MapCycle.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\MapManagement\Scripts\PopulateDropdownWithMapCycle.cs.meta">
+      <Link>MapManagement\Scripts\PopulateDropdownWithMapCycle.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Menu\Scripts.meta">
+      <Link>Menu\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Menu\Windows.meta">
+      <Link>Menu\Windows.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Menu\Scripts\ButtonController.cs.meta">
+      <Link>Menu\Scripts\ButtonController.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Menu\Scripts\ForbidInputAndGuiDrawingWhenMenuIsOpened.cs.meta">
+      <Link>Menu\Scripts\ForbidInputAndGuiDrawingWhenMenuIsOpened.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Menu\Scripts\NetworkStatusChange2Menu.cs.meta">
+      <Link>Menu\Scripts\NetworkStatusChange2Menu.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Menu\Windows\Scripts.meta">
+      <Link>Menu\Windows\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Menu\Windows\Scripts\Player2Windows.cs.meta">
+      <Link>Menu\Windows\Scripts\Player2Windows.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Menu\Windows\Scripts\WindowManager.cs.meta">
+      <Link>Menu\Windows\Scripts\WindowManager.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\RoundSystem\Scripts.meta">
+      <Link>RoundSystem\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\RoundSystem\Scripts\ButtonControllerRoundSystem.cs.meta">
+      <Link>RoundSystem\Scripts\ButtonControllerRoundSystem.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\RoundSystem\Scripts\RoundSystem.cs.meta">
+      <Link>RoundSystem\Scripts\RoundSystem.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\RoundSystem\Scripts\RoundSystemEventsForwarder.cs.meta">
+      <Link>RoundSystem\Scripts\RoundSystemEventsForwarder.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\RoundSystem\Scripts\RoundSystemEventsLogger.cs.meta">
+      <Link>RoundSystem\Scripts\RoundSystemEventsLogger.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\RoundSystem\Scripts\RoundSystemMarkPlayerForSpawning.cs.meta">
+      <Link>RoundSystem\Scripts\RoundSystemMarkPlayerForSpawning.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Score\Scripts.meta">
+      <Link>Score\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Score\Scripts\ScoreDrawer.cs.meta">
+      <Link>Score\Scripts\ScoreDrawer.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Settings\Scripts.meta">
+      <Link>Settings\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Settings\Scripts\GeneralSettings.cs.meta">
+      <Link>Settings\Scripts\GeneralSettings.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Teams\Scripts.meta">
+      <Link>Teams\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Teams\Scripts\PlayerTeamChooser.cs.meta">
+      <Link>Teams\Scripts\PlayerTeamChooser.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Teams\Scripts\TeamManager.cs.meta">
+      <Link>Teams\Scripts\TeamManager.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts.meta">
+      <Link>Utilities\Scripts.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\CameraFollow.cs.meta">
+      <Link>Utilities\Scripts\CameraFollow.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\ClientDisconnectCleanup.cs.meta">
+      <Link>Utilities\Scripts\ClientDisconnectCleanup.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\ClientSyncVar.cs.meta">
+      <Link>Utilities\Scripts\ClientSyncVar.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\ClientSyncVarUpdater.cs.meta">
+      <Link>Utilities\Scripts\ClientSyncVarUpdater.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\CreateObjectOnDestroy.cs.meta">
+      <Link>Utilities\Scripts\CreateObjectOnDestroy.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\CreateObjectWhenKilled.cs.meta">
+      <Link>Utilities\Scripts\CreateObjectWhenKilled.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\CustomInput.cs.meta">
+      <Link>Utilities\Scripts\CustomInput.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\EnableOnlyOnServer.cs.meta">
+      <Link>Utilities\Scripts\EnableOnlyOnServer.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\ExtensionMethods.cs.meta">
+      <Link>Utilities\Scripts\ExtensionMethods.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\FPSLimiter.cs.meta">
+      <Link>Utilities\Scripts\FPSLimiter.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\IntInput.cs.meta">
+      <Link>Utilities\Scripts\IntInput.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\NetworkTransformServerAuthority.cs.meta">
+      <Link>Utilities\Scripts\NetworkTransformServerAuthority.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\PopulateScrollViewWithEvents.cs.meta">
+      <Link>Utilities\Scripts\PopulateScrollViewWithEvents.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\RandomLevelGenerator.cs.meta">
+      <Link>Utilities\Scripts\RandomLevelGenerator.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\RenderersDisabler.cs.meta">
+      <Link>Utilities\Scripts\RenderersDisabler.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\RigidBodyDisabler.cs.meta">
+      <Link>Utilities\Scripts\RigidBodyDisabler.cs.meta</Link>
+    </None>
+    <None Include="..\..\Assets\Utilities\Scripts\SetParentOnStart.cs.meta">
+      <Link>Utilities\Scripts\SetParentOnStart.cs.meta</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Assets\Bridges\Scripts\ChatCommands.cs">
+      <Link>Bridges\Scripts\ChatCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\Scripts\Console2Commands.cs">
+      <Link>Bridges\Scripts\Console2Commands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\Scripts\MapCommands.cs">
+      <Link>Bridges\Scripts\MapCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\Scripts\MapCycle2Console.cs">
+      <Link>Bridges\Scripts\MapCycle2Console.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\Scripts\RoundCommands.cs">
+      <Link>Bridges\Scripts\RoundCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\Scripts\RoundSystem2Chat.cs">
+      <Link>Bridges\Scripts\RoundSystem2Chat.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\Scripts\RoundSystem2Console.cs">
+      <Link>Bridges\Scripts\RoundSystem2Console.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\Scripts\TeamChoose2Windows.cs">
+      <Link>Bridges\Scripts\TeamChoose2Windows.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\Scripts\TeamCommands.cs">
+      <Link>Bridges\Scripts\TeamCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\Scripts\WindowCommands.cs">
+      <Link>Bridges\Scripts\WindowCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\SettingsMenu\Scripts\ButtonControllerSettingsMenu.cs">
+      <Link>Bridges\SettingsMenu\Scripts\ButtonControllerSettingsMenu.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\SettingsMenu\Scripts\SettingsMenu.cs">
+      <Link>Bridges\SettingsMenu\Scripts\SettingsMenu.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\SettingsMenu\Scripts\SettingsMenuScrollViewContent.cs">
+      <Link>Bridges\SettingsMenu\Scripts\SettingsMenuScrollViewContent.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\SettingsMenu\Scripts\SettingsMenuSliderLabelUpdate.cs">
+      <Link>Bridges\SettingsMenu\Scripts\SettingsMenuSliderLabelUpdate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Bridges\SettingsMenu\Scripts\UpdateSettingsMenuWhenItIsOpened.cs">
+      <Link>Bridges\SettingsMenu\Scripts\UpdateSettingsMenuWhenItIsOpened.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\CVars\Scripts\CVarManager.cs">
+      <Link>CVars\Scripts\CVarManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Chat\Scripts\ButtonControllerChat.cs">
+      <Link>Chat\Scripts\ButtonControllerChat.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Chat\Scripts\ChatArea.cs">
+      <Link>Chat\Scripts\ChatArea.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Chat\Scripts\ChatInputField.cs">
+      <Link>Chat\Scripts\ChatInputField.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Chat\Scripts\ChatManager.cs">
+      <Link>Chat\Scripts\ChatManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Chat\Scripts\ChatSync.cs">
+      <Link>Chat\Scripts\ChatSync.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Commands\Scripts\CommandManager.cs">
+      <Link>Commands\Scripts\CommandManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Commands\Scripts\DefaultCommands.cs">
+      <Link>Commands\Scripts\DefaultCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Console\Scripts\Console.cs">
+      <Link>Console\Scripts\Console.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Console\Scripts\ConsoleCanvas.cs">
+      <Link>Console\Scripts\ConsoleCanvas.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Editor\PlayFromFirstScene.cs">
+      <Link>Editor\PlayFromFirstScene.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Editor\RandomObjectGeneratorWindow.cs">
+      <Link>Editor\RandomObjectGeneratorWindow.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\GamePlay\Projectiles\Scripts\Bullet.cs">
+      <Link>GamePlay\Projectiles\Scripts\Bullet.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\GamePlay\Projectiles\Scripts\BulletAfterFireSoundStarter.cs">
+      <Link>GamePlay\Projectiles\Scripts\BulletAfterFireSoundStarter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\GamePlay\Projectiles\Scripts\ProjectileDamageHandler.cs">
+      <Link>GamePlay\Projectiles\Scripts\ProjectileDamageHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\GamePlay\Scripts\Explosion.cs">
+      <Link>GamePlay\Scripts\Explosion.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\GamePlay\Scripts\FPSMove.cs">
+      <Link>GamePlay\Scripts\FPSMove.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\GamePlay\Scripts\FireBulletOnKeyPress.cs">
+      <Link>GamePlay\Scripts\FireBulletOnKeyPress.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\GamePlay\Scripts\RotateObjectWithMouse.cs">
+      <Link>GamePlay\Scripts\RotateObjectWithMouse.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\GamePlay\Scripts\SoundDetach.cs">
+      <Link>GamePlay\Scripts\SoundDetach.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\BasicCameraController.cs">
+      <Link>General\Scripts\BasicCameraController.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\BatchMode.cs">
+      <Link>General\Scripts\BatchMode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\CameraController.cs">
+      <Link>General\Scripts\CameraController.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\ChangeStartupScene.cs">
+      <Link>General\Scripts\ChangeStartupScene.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\CmdLineArgumentsProcessor.cs">
+      <Link>General\Scripts\CmdLineArgumentsProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\ControllableObject.cs">
+      <Link>General\Scripts\ControllableObject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\Damagable.cs">
+      <Link>General\Scripts\Damagable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\DisableWhenInputOrDrawingIsForbidden.cs">
+      <Link>General\Scripts\DisableWhenInputOrDrawingIsForbidden.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\GameManager.cs">
+      <Link>General\Scripts\GameManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\InflictedDamageReporter.cs">
+      <Link>General\Scripts\InflictedDamageReporter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\LocalNetworkEventsDispatcher.cs">
+      <Link>General\Scripts\LocalNetworkEventsDispatcher.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\ModulePart.cs">
+      <Link>General\Scripts\ModulePart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\NetworkEventsDispatcher.cs">
+      <Link>General\Scripts\NetworkEventsDispatcher.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\NetworkEventsProcessExample.cs">
+      <Link>General\Scripts\NetworkEventsProcessExample.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\NetworkStatus.cs">
+      <Link>General\Scripts\NetworkStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\Player.cs">
+      <Link>General\Scripts\Player.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\PlayerManager.cs">
+      <Link>General\Scripts\PlayerManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\PlayingObjectSetter.cs">
+      <Link>General\Scripts\PlayingObjectSetter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\PlayingObjectSpawner.cs">
+      <Link>General\Scripts\PlayingObjectSpawner.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\SceneChanger.cs">
+      <Link>General\Scripts\SceneChanger.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\SceneManagerEventsForwarder.cs">
+      <Link>General\Scripts\SceneManagerEventsForwarder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\SceneSelectDropdown.cs">
+      <Link>General\Scripts\SceneSelectDropdown.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\Score.cs">
+      <Link>General\Scripts\Score.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\SpawnPlayerWhenLoggedIn.cs">
+      <Link>General\Scripts\SpawnPlayerWhenLoggedIn.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\SpawnPlayerWhenSceneChanges.cs">
+      <Link>General\Scripts\SpawnPlayerWhenSceneChanges.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\SpawnPoint.cs">
+      <Link>General\Scripts\SpawnPoint.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\Spectator.cs">
+      <Link>General\Scripts\Spectator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\SpectatorUI.cs">
+      <Link>General\Scripts\SpectatorUI.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\General\Scripts\StartupSingletonObject.cs">
+      <Link>General\Scripts\StartupSingletonObject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\KillEvents\Scripts\KillEventSync.cs">
+      <Link>KillEvents\Scripts\KillEventSync.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\KillEvents\Scripts\KillEventUI.cs">
+      <Link>KillEvents\Scripts\KillEventUI.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\MapManagement\Scripts\ButtonControllerMapCycle.cs">
+      <Link>MapManagement\Scripts\ButtonControllerMapCycle.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\MapManagement\Scripts\DisplayMapImageWhenMapIsSelected.cs">
+      <Link>MapManagement\Scripts\DisplayMapImageWhenMapIsSelected.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\MapManagement\Scripts\MapCycle.cs">
+      <Link>MapManagement\Scripts\MapCycle.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\MapManagement\Scripts\PopulateDropdownWithMapCycle.cs">
+      <Link>MapManagement\Scripts\PopulateDropdownWithMapCycle.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Menu\Scripts\ButtonController.cs">
+      <Link>Menu\Scripts\ButtonController.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Menu\Scripts\ForbidInputAndGuiDrawingWhenMenuIsOpened.cs">
+      <Link>Menu\Scripts\ForbidInputAndGuiDrawingWhenMenuIsOpened.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Menu\Scripts\InGameMenu.cs">
+      <Link>Menu\Scripts\InGameMenu.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Menu\Scripts\Menu.cs">
+      <Link>Menu\Scripts\Menu.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Menu\Scripts\MenuManager.cs">
+      <Link>Menu\Scripts\MenuManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Menu\Scripts\NetworkStatusChange2Menu.cs">
+      <Link>Menu\Scripts\NetworkStatusChange2Menu.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Menu\Windows\Scripts\Player2Windows.cs">
+      <Link>Menu\Windows\Scripts\Player2Windows.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Menu\Windows\Scripts\WindowManager.cs">
+      <Link>Menu\Windows\Scripts\WindowManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Menu\Windows\Scripts\WindowsCanvas.cs">
+      <Link>Menu\Windows\Scripts\WindowsCanvas.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\OnScreenMessages\Scripts\DisplayInflictedDamage.cs">
+      <Link>OnScreenMessages\Scripts\DisplayInflictedDamage.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\OnScreenMessages\Scripts\OnScreenMessageManager.cs">
+      <Link>OnScreenMessages\Scripts\OnScreenMessageManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\RoundSystem\Scripts\ButtonControllerRoundSystem.cs">
+      <Link>RoundSystem\Scripts\ButtonControllerRoundSystem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\RoundSystem\Scripts\RoundSystem.cs">
+      <Link>RoundSystem\Scripts\RoundSystem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\RoundSystem\Scripts\RoundSystemEventsForwarder.cs">
+      <Link>RoundSystem\Scripts\RoundSystemEventsForwarder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\RoundSystem\Scripts\RoundSystemEventsLogger.cs">
+      <Link>RoundSystem\Scripts\RoundSystemEventsLogger.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\RoundSystem\Scripts\RoundSystemMarkPlayerForSpawning.cs">
+      <Link>RoundSystem\Scripts\RoundSystemMarkPlayerForSpawning.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Score\Scripts\ScoreCanvas.cs">
+      <Link>Score\Scripts\ScoreCanvas.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Score\Scripts\ScoreDrawer.cs">
+      <Link>Score\Scripts\ScoreDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Settings\Scripts\GeneralSettings.cs">
+      <Link>Settings\Scripts\GeneralSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Settings\Scripts\TeamSettings.cs">
+      <Link>Settings\Scripts\TeamSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Teams\Scripts\PlayerTeamChooser.cs">
+      <Link>Teams\Scripts\PlayerTeamChooser.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Teams\Scripts\TeamManager.cs">
+      <Link>Teams\Scripts\TeamManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\ButtonLayoutElement.cs">
+      <Link>Utilities\Scripts\ButtonLayoutElement.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\CameraFollow.cs">
+      <Link>Utilities\Scripts\CameraFollow.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\ClientDisconnectCleanup.cs">
+      <Link>Utilities\Scripts\ClientDisconnectCleanup.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\ClientSyncVar.cs">
+      <Link>Utilities\Scripts\ClientSyncVar.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\ClientSyncVarUpdater.cs">
+      <Link>Utilities\Scripts\ClientSyncVarUpdater.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\CreateObjectOnDestroy.cs">
+      <Link>Utilities\Scripts\CreateObjectOnDestroy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\CreateObjectWhenKilled.cs">
+      <Link>Utilities\Scripts\CreateObjectWhenKilled.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\CustomInput.cs">
+      <Link>Utilities\Scripts\CustomInput.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\DisableInputFieldsWhenCanvasIsDisabled.cs">
+      <Link>Utilities\Scripts\DisableInputFieldsWhenCanvasIsDisabled.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\DontDestroyOnLoad.cs">
+      <Link>Utilities\Scripts\DontDestroyOnLoad.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\Draggable.cs">
+      <Link>Utilities\Scripts\Draggable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\EnableOnlyOnServer.cs">
+      <Link>Utilities\Scripts\EnableOnlyOnServer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\ExtensionMethods.cs">
+      <Link>Utilities\Scripts\ExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\FPSLimiter.cs">
+      <Link>Utilities\Scripts\FPSLimiter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\IModuleScript.cs">
+      <Link>Utilities\Scripts\IModuleScript.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\IntInput.cs">
+      <Link>Utilities\Scripts\IntInput.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\MaintainRectTransformPosition.cs">
+      <Link>Utilities\Scripts\MaintainRectTransformPosition.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\ModuleScriptsGameObject.cs">
+      <Link>Utilities\Scripts\ModuleScriptsGameObject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\ModuleScriptsLoader.cs">
+      <Link>Utilities\Scripts\ModuleScriptsLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\NetworkTransformServerAuthority.cs">
+      <Link>Utilities\Scripts\NetworkTransformServerAuthority.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\PopulateScrollViewWithEvents.cs">
+      <Link>Utilities\Scripts\PopulateScrollViewWithEvents.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\RandomLevelGenerator.cs">
+      <Link>Utilities\Scripts\RandomLevelGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\RedirectedLayoutElement.cs">
+      <Link>Utilities\Scripts\RedirectedLayoutElement.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\RenderersDisabler.cs">
+      <Link>Utilities\Scripts\RenderersDisabler.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\RigidBodyDisabler.cs">
+      <Link>Utilities\Scripts\RigidBodyDisabler.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\SetParentOnStart.cs">
+      <Link>Utilities\Scripts\SetParentOnStart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\SetRectTransformPositionOnStart.cs">
+      <Link>Utilities\Scripts\SetRectTransformPositionOnStart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\StretchToParentLayoutElement.cs">
+      <Link>Utilities\Scripts\StretchToParentLayoutElement.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\UIEventsPickup.cs">
+      <Link>Utilities\Scripts\UIEventsPickup.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\Scripts\Utilities.cs">
+      <Link>Utilities\Scripts\Utilities.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\UI\Scripts\Tooltip.cs">
+      <Link>Utilities\UI\Scripts\Tooltip.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Utilities\UI\Scripts\TooltipManager.cs">
+      <Link>Utilities\UI\Scripts\TooltipManager.cs</Link>
+    </Compile>
+  </ItemGroup>
 </Project>
