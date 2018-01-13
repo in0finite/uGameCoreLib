@@ -59,4 +59,6 @@ ProjectSettings/
 *.ttf
 *.mat
 
+# monodevelop userprefs
+monodevelop project/uGameCoreLib/uGameCoreLib.userprefs
 
