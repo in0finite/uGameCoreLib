@@ -39,9 +39,6 @@
     <None Include="..\..\Assets\Console.meta">
       <Link>Console.meta</Link>
     </None>
-    <None Include="..\..\Assets\Editor.meta">
-      <Link>Editor.meta</Link>
-    </None>
     <None Include="..\..\Assets\GamePlay.meta">
       <Link>GamePlay.meta</Link>
     </None>
@@ -158,12 +155,6 @@
     </None>
     <None Include="..\..\Assets\Console\Scripts\Console.cs.meta">
       <Link>Console\Scripts\Console.cs.meta</Link>
-    </None>
-    <None Include="..\..\Assets\Editor\PlayFromFirstScene.cs.meta">
-      <Link>Editor\PlayFromFirstScene.cs.meta</Link>
-    </None>
-    <None Include="..\..\Assets\Editor\RandomObjectGeneratorWindow.cs.meta">
-      <Link>Editor\RandomObjectGeneratorWindow.cs.meta</Link>
     </None>
     <None Include="..\..\Assets\GamePlay\Projectiles.meta">
       <Link>GamePlay\Projectiles.meta</Link>
@@ -481,12 +472,6 @@
     </Compile>
     <Compile Include="..\..\Assets\Console\Scripts\ConsoleCanvas.cs">
       <Link>Console\Scripts\ConsoleCanvas.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\Editor\PlayFromFirstScene.cs">
-      <Link>Editor\PlayFromFirstScene.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\Editor\RandomObjectGeneratorWindow.cs">
-      <Link>Editor\RandomObjectGeneratorWindow.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\GamePlay\Projectiles\Scripts\Bullet.cs">
       <Link>GamePlay\Projectiles\Scripts\Bullet.cs</Link>
