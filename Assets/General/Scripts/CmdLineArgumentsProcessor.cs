@@ -16,14 +16,10 @@ namespace uGameCore {
 		void Process() {
 
 			// don't do it if in editor
-			#if UNITY_EDITOR
+			if (Application.isEditor) {
+				return;
+			}
 
-			return ;
-
-			#endif
-
-
-			#if COMMAND_LINE_ARGUMENTS
 
 			Debug.Log("Processing command line arguments.");
 
@@ -62,8 +58,6 @@ namespace uGameCore {
 
 				}
 
-			#if SERVER
-
 				else if ("-startserver" == arg) {
 					/*
 					if (i == commandLineArgs.Length - 1) {
@@ -96,8 +90,6 @@ namespace uGameCore {
 					}
 
 				}
-
-			#endif
 
 				else if ("-connect" == arg) {
 					/*
@@ -143,8 +135,6 @@ namespace uGameCore {
 				}
 
 			}
-
-			#endif	// COMMAND_LINE_ARGUMENTS
 
 
 		}

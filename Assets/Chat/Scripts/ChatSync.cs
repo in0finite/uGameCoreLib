@@ -16,9 +16,7 @@ namespace uGameCore.Chat {
 
 		[Command]
 		public	void	CmdChatMsg( string msg ) {
-
-			#if SERVER
-
+			
 			Player p = GetComponent<Player>() ;
 
 
@@ -35,8 +33,6 @@ namespace uGameCore.Chat {
 		//	ChatManager.SendChatMessageToAllPlayers( msg, p.playerName );
 			onChatMessageReceivedOnServer( p, msg );
 
-
-			#endif
 
 		}
 
