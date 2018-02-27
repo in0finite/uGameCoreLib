@@ -524,32 +524,31 @@ namespace uGameCore {
 
 		public	void	ExecuteCommandOnServer( string cmd ) {
 
-			CmdExecuteCommandOnServer (cmd);
+		//	CmdExecuteCommandOnServer (cmd);
 
 		}
 
 		[Command]
 		private	void	CmdExecuteCommandOnServer( string cmd ) {
 
-			#if SERVER
-
-			Player p = this ;
+			// this feature should be disabled, since it is a potential security issue
 
 
-			Debug.Log ("Player " + p.playerName + " executing command:");
-			Debug.Log (cmd);
-
-			string response = "";
-			Commands.CommandManager.ProcessCommand (cmd, ref response);
-
-			if (response != "") {
-				Debug.Log (response);
-
-				// send response back to client
-				this.RpcLog (response);
-			}
-
-			#endif
+//			Player p = this ;
+//
+//
+//			Debug.Log ("Player " + p.playerName + " executing command:");
+//			Debug.Log (cmd);
+//
+//			string response = "";
+//			Commands.CommandManager.ProcessCommand (cmd, ref response);
+//
+//			if (response != "") {
+//				Debug.Log (response);
+//
+//				// send response back to client
+//				this.RpcLog (response);
+//			}
 
 		}
 

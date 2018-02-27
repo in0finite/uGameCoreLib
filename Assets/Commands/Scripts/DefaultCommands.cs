@@ -9,7 +9,7 @@ namespace uGameCore.Commands {
 
 		void Start () {
 			
-			string[] commands = new string[] { "camera_disable", "uptime", "server_cmd", "client_cmd", "kick", "kick_instantly",
+			string[] commands = new string[] { "camera_disable", "uptime", "client_cmd", "kick", "kick_instantly",
 				"exit"};
 
 			foreach (var cmd in commands) {
@@ -53,16 +53,18 @@ namespace uGameCore.Commands {
 				int seconds = Mathf.FloorToInt (Time.realtimeSinceStartup) % 60;
 				response += minutes + ":" + seconds;
 
-			} else if (words [0] == "server_cmd") {
-
-				if (NetworkStatus.IsClientConnected ()) {
-					if (numWords < 2)
-						response += invalidSyntaxString;
-					else
-						Player.local.ExecuteCommandOnServer (restOfTheCommand);
-				}
-
-			} else if (words [0] == "client_cmd") {
+			}
+//			else if (words [0] == "server_cmd") {
+//
+//				if (NetworkStatus.IsClientConnected ()) {
+//					if (numWords < 2)
+//						response += invalidSyntaxString;
+//					else
+//						Player.local.ExecuteCommandOnServer (restOfTheCommand);
+//				}
+//
+//			}
+			else if (words [0] == "client_cmd") {
 
 				if (NetworkStatus.IsServerStarted ()) {
 					if (numWords < 2)
