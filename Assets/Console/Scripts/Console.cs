@@ -50,6 +50,7 @@ namespace uGameCore.Menu {
 		private	static	string		m_consoleCommandText = "" ;
 
 		private	static	List<string>	m_history = new List<string> ();
+		public	static	IEnumerable<string>	History { get { return m_history; } }
 		private	static	int		m_historyBrowserIndex = -1 ;
 
 		public	static	Console	singleton { get ; private set ; }
@@ -179,9 +180,10 @@ namespace uGameCore.Menu {
 		public	static	void	ClearLog() {
 
 			m_logMessages.Clear ();
+			m_stringBuilder.Length = 0;
 			m_logString = "";
-			if (singleton.consoleTextDisplay != null)
-				singleton.consoleTextDisplay.text = "";
+
+			UpdateDisplayText ();
 
 		}
 
