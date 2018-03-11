@@ -147,8 +147,8 @@ namespace uGameCore.Score {
 				m_tableEntries.Clear ();
 				m_currentColumnCount = newColumnCount;
 
-				Debug.Log ("Column count changed to " + newColumnCount + ", rect " + GetTableRect() + ", width " + GetTableWidth()
-					+ ", height " + GetTableHeight() );
+			//	Debug.Log ("Column count changed to " + newColumnCount + ", rect " + GetTableRect() + ", width " + GetTableWidth()
+			//		+ ", height " + GetTableHeight() );
 			}
 
 //			int newRowCount = CalculateTableRowsCount ();

@@ -20,6 +20,11 @@ namespace uGameCore.Menu.Windows {
 	//	public	GameObject	gameObject { get ; internal set ; }
 
 
+		[SerializeField]	private	string	m_windowTag = "";
+		/// <summary> String that identifies this type of window. </summary>
+		public string windowTag { get { return this.m_windowTag; } set { m_windowTag = value; } }
+
+
 
 		/// <summary> Position and size of window. </summary>
 		public	Rect	GetRectangle () {
@@ -136,13 +141,68 @@ namespace uGameCore.Menu.Windows {
 			}
 		}
 
-		// TODO: add buttons, texts to content ; add buttons below content ; bring to top when clicked ;
+
+		public	void	BringToTop() {
+
+			if (null == WindowManager.WindowsCanvas)
+				return;
+
+			// when object is last in the hierarchy, it will be rendered last, and thus it will be on top
+			this.transform.SetAsLastSibling ();
+
+		}
+
+		public	void	SendToBack() {
+
+			if (null == WindowManager.WindowsCanvas)
+				return;
+
+			this.transform.SetAsFirstSibling ();
+
+		}
+
+
+		/// <summary>
+		/// Adds button below content, placing him in the middle. After that, reduces size of content so that button can
+		/// be visible.
+		/// </summary>
+		public	GameObject	AddButtonBelowContent( float buttonWidth, float buttonHeight, string buttonText ) {
+
+			// create button
+			var buttonGameObject = WindowManager.singleton.buttonPrefab.InstantiateAsUIElement( this.transform );
+			buttonGameObject.name = "Button " + buttonText;
+			buttonGameObject.GetComponentInChildren<Text> ().text = buttonText;
+			buttonGameObject.GetComponentInChildren<Text> ().resizeTextForBestFit = true;
+		//	buttonGameObject.GetComponentInChildren<Button> ().onClick.AddListener (() => WindowManager.CloseWindow (this));
+
+			// set it's position
+			float buttonHorizontalOffset = (this.GetRectangle().width - buttonWidth) / 2f;
+			float buttonVerticalOffset = 0.05f * this.GetRectangle().height;
+			buttonGameObject.GetRectTransform ().SetRectAndAdjustAnchors( new Rect( buttonHorizontalOffset, buttonVerticalOffset, 
+				buttonWidth, buttonHeight ) );
+		//	buttonGameObject.GetComponent<RectTransform> ().SetNormalizedRectAndAdjustAnchors (new Rect (0.35f, 0.05f, 0.3f, 0.15f));
+
+			// reduce height of scroll view - because we added button
+			float amountToReduce = (buttonHeight + buttonVerticalOffset) / this.GetRectangle().height + 0.05f ;
+			WindowManager.ReduceScrollViewHeightNormalized( this, amountToReduce );
+
+			return buttonGameObject;
+		}
+
+
+		// TODO: add buttons, texts to content ; add multiple buttons below content ;
 
 
 
 		void Start ()
 		{
 		
+			this.gameObject.AddComponent<Utilities.UIEventsPickup>().onPointerDown += (UnityEngine.EventSystems.PointerEventData obj) => {
+				// mouse is pressed over window (well, actually only over this game object, not any of it's children)
+				// bring window to top
+				this.BringToTop();
+			};
+
 		}
 
 

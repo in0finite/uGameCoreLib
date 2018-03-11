@@ -13,7 +13,8 @@ namespace uGameCore.Menu.Windows {
 		static	List<Window>	m_openedWindows = new List<Window> ();
 		public	static	IEnumerable<Window>	OpenedWindows { get { return m_openedWindows.WhereNotNull (); } }
 
-		private	Canvas	windowsCanvas = null;
+		private	static	Canvas	m_windowsCanvas = null;
+		public	static	Canvas	WindowsCanvas { get { return m_windowsCanvas; } }
 
 		public	GameObject	windowPrefab = null;
 		public	GameObject	displayStringPrefab = null;
@@ -29,7 +30,7 @@ namespace uGameCore.Menu.Windows {
 			singleton = this;
 
 			// find canvas
-			this.windowsCanvas = Utilities.Utilities.FindObjectOfTypeOrLogError<WindowsCanvas>().GetComponent<Canvas>();
+			m_windowsCanvas = Utilities.Utilities.FindObjectOfTypeOrLogError<WindowsCanvas>().GetComponent<Canvas>();
 
 		}
 
@@ -250,24 +251,11 @@ namespace uGameCore.Menu.Windows {
 			}
 
 			// add close button
-			var closeButton = singleton.buttonPrefab.InstantiateAsUIElement( window.gameObject.transform );
-			closeButton.name = "CloseButton";
-			closeButton.GetComponentInChildren<Text> ().text = "Close";
-			closeButton.GetComponentInChildren<Text> ().resizeTextForBestFit = true;
-			closeButton.GetComponentInChildren<Button> ().onClick.AddListener (() => CloseWindow (window));
-
-			// set it's position
 			float closeButtonWidth = 0.3f * 320;
 			float closeButtonHeight = 0.15f * 144;
-			float closeButtonHorizontalOffset = (width - closeButtonWidth) / 2f;
-			float closeButtonVerticalOffset = 0.05f * height;
-			closeButton.GetRectTransform ().SetRectAndAdjustAnchors( new Rect( closeButtonHorizontalOffset, closeButtonVerticalOffset, 
-				closeButtonWidth, closeButtonHeight ) );
-		//	closeButton.GetComponent<RectTransform> ().SetNormalizedRectAndAdjustAnchors (new Rect (0.35f, 0.05f, 0.3f, 0.15f));
-
-			// reduce height of scroll view - because we added close button
-			float amountToReduce = (closeButtonHeight + closeButtonVerticalOffset) / height + 0.05f ;
-			ReduceScrollViewHeightNormalized( window, amountToReduce );
+			var closeButton = window.AddButtonBelowContent( closeButtonWidth, closeButtonHeight, "Close");
+			closeButton.name = "CloseButton";
+			closeButton.GetComponentInChildren<Button> ().onClick.AddListener (() => CloseWindow (window));
 
 
 //			Debug.LogFormat ("button width {0} button height {1} h_offset {2} v_offset {3} amount reduced {4} window width {5} " +
@@ -288,7 +276,7 @@ namespace uGameCore.Menu.Windows {
 //			}
 
 			// create window game object
-			var go = singleton.windowPrefab.InstantiateAsUIElement( singleton.windowsCanvas.transform );
+			var go = singleton.windowPrefab.InstantiateAsUIElement( m_windowsCanvas.transform );
 			Window window = go.AddComponentIfDoesntExist<Window>();
 
 			// assign parameters for old GUI system

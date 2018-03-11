@@ -28,11 +28,13 @@ namespace uGameCore.Menu.Windows {
 				} );
 			}, WindowProcedure);
 
+			Window window = array [0];
+			window.windowTag = window.gameObject.name = "ChooseTeamWindow";
+
 			// create cancel button
-			var cancelButtonGo = WindowManager.singleton.buttonPrefab.InstantiateAsUIElement( array[0].gameObject.transform );
-			cancelButtonGo.GetComponentInChildren<Text> ().text = "Cancel";
-			StartCoroutine (this.SetCancelButtonSize (array[0], cancelButtonGo));
-			cancelButtonGo.GetComponent<Button> ().onClick.AddListener (() => { WindowManager.CloseWindow( array[0] ); });
+			var cancelButtonGo = window.AddButtonBelowContent( 96, 27, "Cancel");
+		//	StartCoroutine (this.SetCancelButtonSize (window, cancelButtonGo));
+			cancelButtonGo.GetComponent<Button> ().onClick.AddListener (() => { WindowManager.CloseWindow( window ); });
 
 		}
 
