@@ -7,30 +7,17 @@ namespace uGameCore.Menu.Windows {
 	
 	public class WindowManager : MonoBehaviour {
 		
-
-		public	class WindowInfo
-		{
-			public	int		id = -1 ;
-			public	bool	isModal = false ;
-			public	string	title = "" ;
-			public	Rect	rect = new Rect ();
-			public	List<string>	displayStrings = new List<string> ();
-			public	bool	isClosed = false ;
-			public	System.Action<WindowInfo>	procedure = null;
-			public	GameObject	gameObject = null;
-		}
-
-
 		public	static	WindowManager	singleton { get ; private set ; }
 
 		static	int	lastId = 0 ;
-		static	List<WindowInfo>	m_openedWindows = new List<WindowInfo> ();
-		public	static	IEnumerable<WindowInfo>	OpenedWindows { get { return m_openedWindows; } }
+		static	List<Window>	m_openedWindows = new List<Window> ();
+		public	static	IEnumerable<Window>	OpenedWindows { get { return m_openedWindows.WhereNotNull (); } }
 
 		private	Canvas	windowsCanvas = null;
 
 		public	GameObject	windowPrefab = null;
 		public	GameObject	displayStringPrefab = null;
+		public	GameObject	textPrefab = null;
 		public	GameObject	buttonPrefab = null;
 
 		public	Vector2	msgBoxSize = new Vector2( 0.25f, 0.2f );
@@ -49,7 +36,7 @@ namespace uGameCore.Menu.Windows {
 		void Update () {
 
 			// remove closed windows from list
-			m_openedWindows.RemoveAll( wi => wi.isClosed );
+			m_openedWindows.RemoveAll( wi => null == wi || wi.isClosed );
 
 
 		}
@@ -96,8 +83,8 @@ namespace uGameCore.Menu.Windows {
 		static	void	WindowFunction (int windowID) {
 
 			// find window info by it's id
-			WindowInfo wi = null ;
-			foreach( WindowInfo windowInfo in m_openedWindows ) {
+			Window wi = null ;
+			foreach( Window windowInfo in m_openedWindows ) {
 				if (windowInfo.id == windowID) {
 					wi = windowInfo;
 					break;
@@ -120,7 +107,7 @@ namespace uGameCore.Menu.Windows {
 
 		}
 
-		private	static	void	MessageBoxProcedure( WindowInfo wi ) {
+		private	static	void	MessageBoxProcedure( Window wi ) {
 
 			// message box with close button
 
@@ -139,7 +126,7 @@ namespace uGameCore.Menu.Windows {
 
 		}
 
-		public	static	void	CloseWindow( WindowInfo wi ) {
+		public	static	void	CloseWindow( Window wi ) {
 
 			wi.isClosed = true;
 
@@ -158,81 +145,141 @@ namespace uGameCore.Menu.Windows {
 
 		}
 
+		/// <summary>
+		/// Returns a rectangle which is centered on the sceen, and has specified width and height percentages.
+		/// </summary>
 		public	static	Rect	GetCenteredRect( float screenWidthPercentage, float screenHeightPercentage ) {
 
 			float width = Screen.width * screenWidthPercentage;
 			float height = Screen.height * screenHeightPercentage;
 			float x = Screen.width / 2 - width / 2;
 			float y = Screen.height / 2 - height / 2;
+		//	Debug.LogFormat ("x {0} y {1} width {2} height {3} widthPerc {4} heightPerc {5} Screen.width {6} Screen.height {7}", 
+		//		x, y, width, height, screenWidthPercentage, screenHeightPercentage, Screen.width, Screen.height);
 			return new Rect (x, y, width, height);
 
 		}
 
-		public	static	void	ReduceScrollViewHeightNormalized( WindowInfo window, float amountToReduce ) {
+		/// <summary>
+		/// Reduces height of scroll view from bottom.
+		/// </summary>
+		/// <param name="amountToReduce">Amount to reduce in normalized coordinates (0 to 1).</param>
+		public	static	void	ReduceScrollViewHeightNormalized( Window window, float amountToReduce ) {
 
-			var scrollView = window.gameObject.GetComponentInChildren<ScrollRect> ();
+			var scrollView = window.scrollView;
 			if (null == scrollView)
 				return;
 
-			var rt = scrollView.GetComponent<RectTransform> ();
+			var rt = scrollView.GetRectTransform ();
 
-			Vector2 min = rt.anchorMin;
-			min.y += amountToReduce;
-			rt.anchorMin = min;
+		//	Vector2 min = rt.anchorMin;
+		//	min.y += amountToReduce;
+		//	rt.anchorMin = min;
 
-			rt.CornersToAnchors ();
+			// don't move corners to anchors, because we have fixed offset from top, which is reserved for title
+		//	rt.CornersToAnchors ();
+
+			// don't change anchors, only change offset from bottom (offsetMin)
+			Vector2 newOffsetMin = rt.offsetMin;
+			newOffsetMin.y += amountToReduce * window.rect.height;
+			rt.offsetMin = newOffsetMin;
 
 		}
 
-		public	static	WindowInfo	OpenMessageBox( string text, bool isModal ) {
+		public	static	Window	OpenMessageBox( string text, bool isModal ) {
 
-//			int width = Screen.width / 4;
-//			int height = width * 9 / 16;
-//			int x = Screen.width / 2 - width / 2 + UnityEngine.Random.Range (-50, 50);
-//			int y = Screen.height / 2 - height / 2 + UnityEngine.Random.Range (-50, 50);
-			Rect rect = GetCenteredRect (singleton.msgBoxSize.x, singleton.msgBoxSize.y);
+			int width = (int) (singleton.msgBoxSize.x * Screen.width);
+			int height = (int) (singleton.msgBoxSize.y * Screen.height);
+			return OpenMessageBox ( width, height, text, isModal);
+
+		}
+
+		public	static	Window	OpenMessageBox( int width, int height, string text, bool isModal ) {
+
+			// compute position for window
+			Rect rect = GetCenteredRect (width / (float) Screen.width, height / (float) Screen.height);
 			rect.position += UnityEngine.Random.insideUnitCircle * 100;
 
-			Action<string,GameObject> processButton = (s, button) => {
-				var el = button.AddComponent<Utilities.StretchToParentLayoutElement>();
-				el.width = 1.0f;
-				el.height = 0.8f;
-				el.stretchElement = button.GetComponentInParent<ScrollRect>().transform as RectTransform ;
-			};
-			var window = OpenWindow( rect, "", new string[] { text }, isModal, processButton, MessageBoxProcedure );
 
-			// set alignment of scroll view to center
-//			var layout = window.gameObject.GetComponentInChildren<VerticalLayoutGroup>();
-//			layout.childAlignment = TextAnchor.MiddleCenter ;
-//			// rebuild layout
-//			LayoutRebuilder.MarkLayoutForRebuild (layout.GetComponent<RectTransform> ());
+			Action<string,GameObject> processButton = (s, button) => {
+				// stretch button to parent size
+				var el = button.AddComponent<Utilities.StretchToParentLayoutElement>();
+				el.width = 1.0f;	// same width as parent
+				el.height = 0.8f;
+				el.stretchElement = button.GetComponentInParent<ScrollRect>().GetRectTransform () ;
+			};
+
+			var window = OpenWindow( rect, "", new string[] {}, isModal, processButton, MessageBoxProcedure );
+
+			window.gameObject.name = "MessageBox";
+
+			// disable layout group - because we don't need it, and it will screw up position of text component
+//			window.contentLayoutGroupEnabled = false;
+//			if (window.contentLayoutGroup)
+//				Destroy (window.contentLayoutGroup);
+
+			// set alignment of scroll view to middle center - but it doesn't work
+//			if (window.contentLayoutGroup) {
+//				window.contentLayoutGroup.childAlignment = TextAnchor.MiddleCenter;
+//				// rebuild layout
+//				LayoutRebuilder.MarkLayoutForRebuild (window.contentLayoutGroup.GetRectTransform ());
+//			}
+
+			// let's try to destroy ContentSizeFitter
+			if(window.content) {
+				var contentSizeFitter = window.content.GetComponent<ContentSizeFitter> ();
+				if (contentSizeFitter) {
+				//	contentSizeFitter.enabled = false;
+				//	Destroy (contentSizeFitter);
+				}
+			}
+
+			// create text
+			if (window.content) {
+				var textGameObject = singleton.textPrefab.InstantiateAsUIElement (window.content);
+
+			//	var rt = textGameObject.GetRectTransform ();
+			//	rt.SetNormalizedRectAndAdjustAnchors (new Rect(0.05f, 0.05f, 0.9f, 0.9f));
+
+				var textComponent = textGameObject.GetComponentInChildren<Text> ();
+				if (textComponent) {
+					textComponent.text = text;
+					// because vertical layout can only align elements to upper left, we will set text alignment to the same
+					textComponent.alignment = TextAnchor.UpperLeft ;
+				}
+			}
 
 			// add close button
 			var closeButton = singleton.buttonPrefab.InstantiateAsUIElement( window.gameObject.transform );
+			closeButton.name = "CloseButton";
 			closeButton.GetComponentInChildren<Text> ().text = "Close";
+			closeButton.GetComponentInChildren<Text> ().resizeTextForBestFit = true;
 			closeButton.GetComponentInChildren<Button> ().onClick.AddListener (() => CloseWindow (window));
-			// set it's position
-		//	width = (int) rect.width / 3 ;
-		//	height = width * 9 / 16 ;
-		//	Rect msgBoxRect = new Rect( rect.center.x - width / 2, rect.yMax - 5 - height / 2, width, height);
-		//	closeButton.GetComponent<RectTransform>().SetRectAndAdjustAnchors( msgBoxRect );
-			closeButton.GetComponent<RectTransform> ().SetNormalizedRectAndAdjustAnchors (new Rect (0.35f, 0.05f, 0.3f, 0.15f));
 
-			// reduce height of scroll view
-			ReduceScrollViewHeightNormalized( window, 0.25f );
+			// set it's position
+			float closeButtonWidth = 0.3f * 320;
+			float closeButtonHeight = 0.15f * 144;
+			float closeButtonHorizontalOffset = (width - closeButtonWidth) / 2f;
+			float closeButtonVerticalOffset = 0.05f * height;
+			closeButton.GetRectTransform ().SetRectAndAdjustAnchors( new Rect( closeButtonHorizontalOffset, closeButtonVerticalOffset, 
+				closeButtonWidth, closeButtonHeight ) );
+		//	closeButton.GetComponent<RectTransform> ().SetNormalizedRectAndAdjustAnchors (new Rect (0.35f, 0.05f, 0.3f, 0.15f));
+
+			// reduce height of scroll view - because we added close button
+			float amountToReduce = (closeButtonHeight + closeButtonVerticalOffset) / height + 0.05f ;
+			ReduceScrollViewHeightNormalized( window, amountToReduce );
+
+
+//			Debug.LogFormat ("button width {0} button height {1} h_offset {2} v_offset {3} amount reduced {4} window width {5} " +
+//				"window height {6} window rect {7}", 
+//				closeButtonWidth, closeButtonHeight, closeButtonHorizontalOffset, closeButtonVerticalOffset, amountToReduce, width, height,
+//				rect );
 
 			return window;
 		}
 
-		public	static	WindowInfo	OpenWindow( Rect rect, string title, IEnumerable<string> displayStrings, bool isModal,
-			Action<string, GameObject> onDisplayStringCreated, Action<WindowInfo> windowProcedure ) {
-
-			WindowInfo wi = new WindowInfo ();
-			wi.title = title;
-			wi.displayStrings = new List<string> (displayStrings);
-			wi.isModal = isModal;
-			wi.rect = new Rect (rect);
-			wi.procedure = windowProcedure;
+		public	static	Window	OpenWindow( Rect rect, string title, IEnumerable<string> displayStrings, bool isModal,
+			Action<string, GameObject> onDisplayStringCreated, Action<Window> windowProcedure ) {
 
 
 //			if (wi.isModal) {
@@ -242,41 +289,49 @@ namespace uGameCore.Menu.Windows {
 
 			// create window game object
 			var go = singleton.windowPrefab.InstantiateAsUIElement( singleton.windowsCanvas.transform );
-			wi.gameObject = go;
+			Window window = go.AddComponentIfDoesntExist<Window>();
 
-			var rectTransform = go.GetComponent<RectTransform>();
+			// assign parameters for old GUI system
+		//	window.gameObject = go;
+			window.title = title;
+			window.displayStrings = new List<string> (displayStrings);
+			window.isModal = isModal;
+			window.rect = new Rect (rect);
+			window.procedure = windowProcedure;
 
 			// add click handler which will bring windows canvas to top
 		//	go.AddComponent<Utilities.UIEventsPickup>().onPointerClick += (arg) => { WindowManager.singleton.windowsCanvas.sortingOrder = int.MaxValue; };
 
 			// position and size
-			rectTransform.SetRectAndAdjustAnchors( rect );
+			window.SetRectangle( rect );
 
 			// title
-			rectTransform.FindChild("Title").GetComponentInChildren<Text>().text = title ;
+			window.Title = title ;
 
-			// populate scroll view with display strings
-			var scrollViewContent = rectTransform.GetComponentInChildren<ScrollRect>().content ;
-			foreach(var s in displayStrings) {
+			// populate content with display strings
+			if (window.content) {
+				foreach (var s in displayStrings) {
 				
-				var displayStringObject = Instantiate (singleton.displayStringPrefab);
-				displayStringObject.transform.SetParent (scrollViewContent.transform, false);
+					var displayStringObject = singleton.displayStringPrefab.InstantiateAsUIElement (window.content.transform);
 
-				displayStringObject.GetComponentInChildren<Text> ().text = s;
+					var textComponent = displayStringObject.GetComponentInChildren<Text> ();
+					if (textComponent)
+						textComponent.text = s;
 
-				if (onDisplayStringCreated != null)
-					onDisplayStringCreated (s, displayStringObject);
+					if (onDisplayStringCreated != null)
+						onDisplayStringCreated (s, displayStringObject);
+				}
 			}
 
 
-			m_openedWindows.Add (wi);
+			m_openedWindows.Add (window);
 
-			wi.id = GetNewWindowId();
+			window.id = GetNewWindowId();
 
-			return wi;
+			return window;
 		}
 
-		public	static	WindowInfo	OpenWindow( Rect rect, string title, IEnumerable<string> displayStrings, bool isModal ) {
+		public	static	Window	OpenWindow( Rect rect, string title, IEnumerable<string> displayStrings, bool isModal ) {
 
 			return OpenWindow (rect, title, displayStrings, isModal, null, null);
 

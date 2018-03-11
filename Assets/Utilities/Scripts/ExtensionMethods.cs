@@ -103,6 +103,7 @@ namespace uGameCore {
 		}
 
 
+		[System.Obsolete]
 		public	static	void	CopyTo(this Component component, Component targetComponent) {
 
 			System.Type type = component.GetType ();
@@ -265,6 +266,16 @@ namespace uGameCore {
 		}
 
 
+		public	static	T	AddComponentIfDoesntExist<T> (this GameObject gameObject) where T : Component {
+
+			var component = gameObject.GetComponent<T> ();
+			if (null == component)
+				component = gameObject.AddComponent<T> ();
+
+			return component;
+		}
+
+
 		public	static	Transform	FindChildOrLogError( this Transform transform, string childName ) {
 
 			var child = transform.FindChild (childName);
@@ -293,6 +304,18 @@ namespace uGameCore {
 			var go = GameObject.Instantiate (prefab);
 			go.transform.SetParent (parent, false);
 			return go;
+		}
+
+		public	static	RectTransform	GetRectTransform( this Component component ) {
+
+			return component.transform as RectTransform;
+
+		}
+
+		public	static	RectTransform	GetRectTransform( this GameObject go ) {
+
+			return go.transform as RectTransform;
+
 		}
 
 		public	static	void	AnchorsToCorners( this RectTransform rectTransform ) {

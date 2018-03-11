@@ -18,7 +18,7 @@ namespace uGameCore.Menu.Windows {
 
 			Rect rect = WindowManager.GetCenteredRect( 0.5f, 0.5f );
 
-			var array = new WindowManager.WindowInfo[1];
+			var array = new Window[1];
 			array[0] = WindowManager.OpenWindow (rect, "Choose team", teams, false, (s, go) => {
 					go.GetComponent<Button>().onClick.AddListener( () => {
 					// team choosed
@@ -36,7 +36,7 @@ namespace uGameCore.Menu.Windows {
 
 		}
 
-		IEnumerator	SetCancelButtonSize( WindowManager.WindowInfo window, GameObject cancelButton ) {
+		IEnumerator	SetCancelButtonSize( Window window, GameObject cancelButton ) {
 
 			yield return null;
 			yield return null;
@@ -76,7 +76,7 @@ namespace uGameCore.Menu.Windows {
 
 		}
 
-		void WindowProcedure( WindowManager.WindowInfo wi ) {
+		void WindowProcedure( Window wi ) {
 
 			if (!UnityEngine.Networking.NetworkManager.singleton.IsClient()) {
 				WindowManager.CloseWindow (wi);
