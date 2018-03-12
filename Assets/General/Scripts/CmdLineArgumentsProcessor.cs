@@ -85,8 +85,7 @@ namespace uGameCore {
 
 					//	this.networkManager.StartServer (commandLine_useMM, commandLine_Port, false);
 
-						NetworkManager.singleton.networkPort = commandLine_Port ;
-						NetworkManager.singleton.StartServer();
+						NetManager.StartServer (commandLine_Port);
 					}
 
 				}
@@ -124,7 +123,7 @@ namespace uGameCore {
 						
 					} else {
 						if (commandLine_Port > 0 && commandLine_ip.Length > 0) {
-							NetworkManager.singleton.StartClient (commandLine_ip, commandLine_Port);
+							NetManager.StartClient (commandLine_ip, commandLine_Port);
 						}
 					}
 

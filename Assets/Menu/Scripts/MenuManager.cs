@@ -78,9 +78,7 @@ namespace uGameCore.Menu {
 
 		public virtual void QuitToMenu() {
 
-			NetworkManager.singleton.StopHost ();
-			NetworkManager.singleton.StopServer ();
-			NetworkManager.singleton.StopClient ();
+			NetManager.StopNetwork ();
 
 		}
 
@@ -191,9 +189,9 @@ namespace uGameCore.Menu {
 		public	void	StartServerWithSpecifiedOptions( bool asHost ) {
 			
 			if(asHost)
-				UnityEngine.Networking.NetworkManager.singleton.StartHost ();
+				NetManager.StartHost (NetManager.defaultListenPortNumber);
 			else
-				UnityEngine.Networking.NetworkManager.singleton.StartServer ();
+				NetManager.StartServer (NetManager.defaultListenPortNumber);
 		}
 
 		public	void	ConnectToServerWithParameters() {
@@ -201,10 +199,10 @@ namespace uGameCore.Menu {
 			var menu = System.Array.Find (FindObjectsOfType<Menu> (), c => c.menuName == "JoinGameMenu");
 			var rectTransform = menu.GetComponent<RectTransform> ();
 
-			NetworkManager.singleton.networkAddress = ReadInputField( rectTransform, "Ip");
-			NetworkManager.singleton.networkPort = int.Parse (ReadInputField (rectTransform, "PortNumber"));
+			string ip = ReadInputField( rectTransform, "Ip");
+			int port = int.Parse (ReadInputField (rectTransform, "PortNumber"));
 
-			NetworkManager.singleton.StartClient ();
+			NetManager.StartClient (ip, port);
 		}
 
 	}

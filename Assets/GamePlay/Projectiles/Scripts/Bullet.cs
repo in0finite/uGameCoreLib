@@ -27,7 +27,6 @@ namespace uGameCore {
 
 		[System.NonSerialized]	public	float	timeAlive = 0.0f ;
 
-		private	NetworkManager	networkManager = null ;
 		private	Vector3 startPosition = Vector3.zero ;
 		private	Behaviour	halo = null ;
 
@@ -35,8 +34,7 @@ namespace uGameCore {
 
 		// Use this for initialization
 		protected	void Start () {
-		
-			this.networkManager = NetworkManager.singleton;
+
 			this.halo = (Behaviour)this.GetComponent ("Halo");
 
 			this.startPosition = this.transform.position;

@@ -641,9 +641,9 @@ namespace uGameCore.Score {
 
 			List<float> widthPercentages = null;
 
-			if (NetworkManager.singleton.IsClient ())
+			if (NetworkStatus.IsClient ())
 				widthPercentages = new List<float>(){ 0.4f, 0.15f, 0.15f, 0.3f };
-			else if (NetworkManager.singleton.IsServer ())
+			else if (NetworkStatus.IsServer ())
 				widthPercentages = new List<float>(){ 0.25f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.225f, 0.225f };
 
 			return widthPercentages;
@@ -651,9 +651,9 @@ namespace uGameCore.Score {
 
 		public	static	List<string>	GetColumnNames() {
 
-			if (NetworkManager.singleton.IsClient ()) {
+			if (NetworkStatus.IsClient ()) {
 				return new List<string>(){ "name", "kills", "deaths", "ping" };
-			} else if (NetworkManager.singleton.IsServer ()) {
+			} else if (NetworkStatus.IsServer ()) {
 				return new List<string>() {"name", "kills", "deaths", "ping", "health", "net id",
 					"obj id", "status", "ip"
 				};
@@ -674,7 +674,7 @@ namespace uGameCore.Score {
 				player.GetComponent<Score> ().NumDeaths, player.Ping
 			};
 
-			if (NetworkManager.singleton.IsServer ()) {
+			if (NetworkStatus.IsServer ()) {
 				// add stuff for dedicated server
 				values.AddRange( new object[] {
 					player.health, player.netId.Value, playingObjectId, "", player.conn.address

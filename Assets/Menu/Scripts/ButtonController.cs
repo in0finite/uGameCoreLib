@@ -98,16 +98,12 @@ namespace uGameCore.Menu {
 
 
 		public	void	StartServer() {
-			UnityEngine.Networking.NetworkManager.singleton.StartHost ();
+			NetManager.StartHost (NetManager.defaultListenPortNumber);
 		}
 
 		public	void	StartServerWithSpecifiedOptions( RectTransform menuObject ) {
 
 			MenuManager.singleton.StartServerWithSpecifiedOptions (true);
-		}
-
-		public	void	ConnectToServer() {
-			UnityEngine.Networking.NetworkManager.singleton.StartClient ();
 		}
 
 		public	void	ConnectToServerWithParameters() {

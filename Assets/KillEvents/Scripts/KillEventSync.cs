@@ -46,7 +46,7 @@ namespace uGameCore.KillEvents {
 				}
 			}
 
-			if (!NetworkManager.singleton.IsHost ()) {
+			if (!NetworkStatus.IsHost ()) {
 				// running as dedicated server
 				// invoke event here, because there is no local player to invoke it
 				onKillEvent( new KillEvent(killer, dier) );

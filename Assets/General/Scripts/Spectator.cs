@@ -32,7 +32,7 @@ namespace uGameCore {
 			}
 
 
-			if (NetworkManager.singleton.IsClient ()) {
+			if (NetworkStatus.IsClient ()) {
 				if (Player.local != null) {
 					if (Player.local.GetControllingGameObject () != null) {
 						// controlling object is alive
@@ -53,7 +53,7 @@ namespace uGameCore {
 					// we are on client, and there is no local player
 					m_currentlySpectatedObject = null;
 				}
-			} else if (NetworkManager.singleton.IsServer ()) {
+			} else if (NetworkStatus.IsServer ()) {
 				// we are on dedicated server
 
 				if (null == m_currentlySpectatedObject || null == m_currentlySpectatedObject.GetControllingGameObject()) {

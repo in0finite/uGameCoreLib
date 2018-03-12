@@ -7,7 +7,7 @@ namespace uGameCore.Chat {
 
 		public	void	SendChatMessage( UnityEngine.UI.InputField inputField ) {
 
-			if (!UnityEngine.Networking.NetworkManager.singleton.IsClient ()) {
+			if (!NetworkStatus.IsClient ()) {
 				// this is not client (nor host), so we will send message as server
 				ChatManager.SendChatMessageToAllPlayersAsServer (inputField.text);
 			} else {

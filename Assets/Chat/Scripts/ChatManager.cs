@@ -80,7 +80,7 @@ namespace uGameCore.Chat {
 				SendChatMessageToPlayer ( player, msg, sender );
 			}
 
-			if (!NetworkManager.singleton.IsHost ()) {
+			if (!NetworkStatus.IsHost ()) {
 				// running as dedicated server
 				// we should invoke the event here, because there is no local player to receive the chat message
 				onChatMessage( new ChatMessage(msg, sender) );

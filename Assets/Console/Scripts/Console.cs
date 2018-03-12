@@ -498,8 +498,8 @@ namespace uGameCore.Menu {
 			}
 
 			// Display network statistics for client
-			if( NetworkStatus.IsClientConnected () && !NetworkManager.singleton.IsHost() ) {
-				NetworkConnection conn = NetworkManager.singleton.client.connection;
+			if( NetworkStatus.IsClientConnected () && !NetworkStatus.IsHost() ) {
+				NetworkConnection conn = NetManager.GetClient ().connection;
 				byte error = 0;
 				GUILayout.Label( " ping: " + NetworkTransport.GetCurrentRtt (conn.hostId, conn.connectionId, out error) + " ms" );
 				GUILayout.Label( " lost_packets: " + NetworkTransport.GetNetworkLostPacketNum (conn.hostId, conn.connectionId, out error) );

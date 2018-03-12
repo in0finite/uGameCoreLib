@@ -27,11 +27,9 @@ namespace uGameCore.Commands {
 
 			string response = "";
 
-			var networkManager = UnityEngine.Networking.NetworkManager.singleton;
-
 			if (numWords > 1 && words [0] == "say") {
 
-				if (networkManager.IsClient ()) {
+				if (NetworkStatus.IsClientConnected ()) {
 
 					var chatSync = Player.local.GetComponent<Chat.ChatSync> ();
 					if (chatSync != null) {

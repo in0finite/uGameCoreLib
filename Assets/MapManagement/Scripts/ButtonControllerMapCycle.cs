@@ -26,7 +26,7 @@ namespace uGameCore.MapManagement {
 
 			MapCycle.singleton.SetCurrentMapIndex (index);
 
-			UnityEngine.Networking.NetworkManager.singleton.StartHost ();
+			NetManager.StartHost (NetManager.defaultListenPortNumber);
 		}
 
 	}

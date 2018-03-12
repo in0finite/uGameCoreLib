@@ -481,7 +481,7 @@ namespace uGameCore {
 			// broadcast message before stopping client -> it may destroy our game object
 			this.gameObject.BroadcastMessageNoExceptions ("OnDisconnectedByServer", infoString);
 
-			NetworkManager.singleton.StopClient ();
+			NetManager.StopClient ();
 
 		}
 

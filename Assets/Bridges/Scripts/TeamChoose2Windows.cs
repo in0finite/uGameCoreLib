@@ -80,7 +80,7 @@ namespace uGameCore.Menu.Windows {
 
 		void WindowProcedure( Window wi ) {
 
-			if (!UnityEngine.Networking.NetworkManager.singleton.IsClient()) {
+			if (NetworkStatus.IsClientDisconnected ()) {
 				WindowManager.CloseWindow (wi);
 				return;
 			}
