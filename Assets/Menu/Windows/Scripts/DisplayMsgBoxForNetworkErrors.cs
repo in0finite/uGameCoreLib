@@ -29,11 +29,14 @@ namespace uGameCore.Menu.Windows {
 
 		void LogHandler(string logMessage, string stackTrace, LogType logType) {
 
+			// TODO: check if this is error or exception
+
+
 			bool bShouldDisplay = false;
 
 			if (this.exactErrors.Contains (logMessage)) {
 				bShouldDisplay = true;
-			} else if (this.errorsThatStartWith.Exists (s => s.StartsWith (logMessage))) {
+			} else if (this.errorsThatStartWith.Exists (s => logMessage.StartsWith (s))) {
 				bShouldDisplay = true;
 			}
 
