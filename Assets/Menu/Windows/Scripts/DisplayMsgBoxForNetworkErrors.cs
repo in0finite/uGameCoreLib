@@ -29,8 +29,10 @@ namespace uGameCore.Menu.Windows {
 
 		void LogHandler(string logMessage, string stackTrace, LogType logType) {
 
-			// TODO: check if this is error or exception
-
+			// check if this is error, exception or assert
+			if (logType != LogType.Error && logType != LogType.Exception && logType != LogType.Assert) {
+				return;
+			}
 
 			bool bShouldDisplay = false;
 
