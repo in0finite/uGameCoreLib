@@ -13,15 +13,11 @@ namespace uGameCore.Menu {
 	{
 		
 		public	bool	modifyFontSize = false;
-	//	[UnityEngine.Serialization.FormerlySerializedAs("startingFontSize")]
 		public	int	regularFontSize = 15;
 		public	int	highlightedFontSize = 18;
 
-	//	[UnityEngine.Serialization.FormerlySerializedAs("modifyFontColor")]
 		public	bool	modifyTextColor = false;
-	//	[UnityEngine.Serialization.FormerlySerializedAs("regularColor")]
 		public	Color	regularTextColor = Color.white;
-	//	[UnityEngine.Serialization.FormerlySerializedAs("highlightedColor")]
 		public	Color	highlightedTextColor = Color.blue;
 
 		public	bool	playHoverSound = false;
@@ -107,7 +103,7 @@ namespace uGameCore.Menu {
 		}
 
 		public	void	ConnectToServerWithParameters() {
-
+			
 			MenuManager.singleton.ConnectToServerWithParameters ();
 
 		}

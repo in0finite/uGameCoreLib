@@ -195,6 +195,20 @@ namespace uGameCore.Menu.Windows {
 
 		}
 
+		public	static	Window	OpenMessageBox( string title, string text ) {
+
+			var window = WindowManager.OpenMessageBox (text, false);
+			window.Title = title;
+			return window;
+		}
+
+		public	static	Window	OpenMessageBox( string title, string text, int width, int height ) {
+
+			var window = WindowManager.OpenMessageBox (width, height, text, false);
+			window.Title = title;
+			return window;
+		}
+
 		public	static	Window	OpenMessageBox( int width, int height, string text, bool isModal ) {
 
 			// compute position for window

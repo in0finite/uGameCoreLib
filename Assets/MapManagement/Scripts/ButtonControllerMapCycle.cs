@@ -13,20 +13,35 @@ namespace uGameCore.MapManagement {
 
 		public	void	StartServerWithSpecifiedMap( UnityEngine.UI.Dropdown dropdown ) {
 
-			if (dropdown.value < 0)
-				return;
+			try {
 
-			string sceneName = dropdown.options [dropdown.value].text;
+				if(dropdown.options.Count < 1)
+					throw new System.Exception("No maps available");
 
-			int index = MapCycle.singleton.mapCycleList.IndexOf (sceneName);
-			if (index < 0)
-				return;
+				if (dropdown.value < 0)
+					throw new System.Exception ("Map not selected");
 
-			UnityEngine.Networking.NetworkManager.singleton.onlineScene = sceneName;
+				string sceneName = dropdown.options [dropdown.value].text;
 
-			MapCycle.singleton.SetCurrentMapIndex (index);
+				int index = MapCycle.singleton.mapCycleList.IndexOf (sceneName);
+				if (index < 0)
+					throw new System.Exception ("Selected map not found in map cycle list");
 
-			NetManager.StartHost (NetManager.defaultListenPortNumber);
+				UnityEngine.Networking.NetworkManager.singleton.onlineScene = sceneName;
+
+				MapCycle.singleton.SetCurrentMapIndex (index);
+
+				NetManager.StartHost (NetManager.defaultListenPortNumber);
+
+			} catch( System.Exception ex ) {
+
+				Debug.LogException (ex);
+
+				// notify scripts
+				Utilities.Utilities.SendMessageToAllMonoBehaviours ("OnFailedToStartServer", 
+					new Utilities.FailedToStartServerMessage (ex));
+			}
+
 		}
 
 	}

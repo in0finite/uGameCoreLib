@@ -161,13 +161,36 @@ namespace uGameCore.Menu {
 		}
 
 
-		public static Canvas FindCanvasByName(string name) {
+		public	static	Menu	FindMenuByName( string menuName ) {
 
-			var cc = System.Array.Find (FindObjectsOfType<Menu> (), canvas => canvas.menuName == name);
-			if (null == cc)
+			Menu foundMenu = System.Array.Find (FindObjectsOfType<Menu> (), m => m.menuName == menuName);
+			return foundMenu;
+
+		}
+
+		/// <summary>
+		/// Finds the menu by name, and throws exception if it is not found.
+		/// </summary>
+		public	static	Menu	FindMenuByNameOrThrow( string menuName ) {
+
+			var menu = MenuManager.FindMenuByName (menuName);
+
+			if (null == menu)
+				throw new System.Exception ("Failed to find a menu with name: " + menuName);
+
+			return menu;
+		}
+
+		/// <summary>
+		/// Finds canvas which has the menu component attached with specified name.
+		/// </summary>
+		public	static	Canvas FindCanvasByName(string menuName) {
+
+			var menu = MenuManager.FindMenuByName (menuName);
+			if (null == menu)
 				return null;
 
-			return cc.GetComponent<Canvas> ();
+			return menu.GetComponent<Canvas> ();
 		}
 
 		public Transform	FindChildOfMenu(RectTransform menu, string childName) {
@@ -192,17 +215,34 @@ namespace uGameCore.Menu {
 				NetManager.StartHost (NetManager.defaultListenPortNumber);
 			else
 				NetManager.StartServer (NetManager.defaultListenPortNumber);
+			
 		}
 
+		/// <summary>
+		/// Tries to connect to server with parameters from UI, and notifies scripts in case of failure.
+		/// </summary>
 		public	void	ConnectToServerWithParameters() {
 
-			var menu = System.Array.Find (FindObjectsOfType<Menu> (), c => c.menuName == "JoinGameMenu");
-			var rectTransform = menu.GetComponent<RectTransform> ();
+			try {
 
-			string ip = ReadInputField( rectTransform, "Ip");
-			int port = int.Parse (ReadInputField (rectTransform, "PortNumber"));
+				var menu = MenuManager.FindMenuByNameOrThrow ("JoinGameMenu");
 
-			NetManager.StartClient (ip, port);
+				var rectTransform = menu.GetRectTransform ();
+
+				string ip = ReadInputField( rectTransform, "Ip");
+				int port = int.Parse (ReadInputField (rectTransform, "PortNumber"));
+
+				NetManager.StartClient (ip, port);
+
+			} catch( System.Exception ex ) {
+
+				Debug.LogException (ex);
+
+				// notify scripts
+				Utilities.Utilities.SendMessageToAllMonoBehaviours ("OnFailedToJoinGame", 
+					new Utilities.FailedToJoinGameMessage (ex));
+			}
+
 		}
 
 	}
