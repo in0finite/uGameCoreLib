@@ -217,6 +217,7 @@ namespace uGameCore.Menu {
 			Debug.Log ( "> " + textToProcess );
 
 			try {
+				// TODO: should we invoke all subscribers exception safe ?
 				onTextSubmitted (textToProcess);
 			} catch( System.Exception ex ) {
 				Debug.LogException (ex);

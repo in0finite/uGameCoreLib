@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace uGameCore.Commands {
@@ -9,7 +8,7 @@ namespace uGameCore.Commands {
 
 		void Start () {
 
-			string[] commands = new string[] { "msgbox", "modal_msgbox", "msgboxtest" };
+			string[] commands = new string[] { "msgbox", "modal_msgbox", "msgboxtest", "msgboxallclients" };
 
 			foreach (var cmd in commands) {
 				CommandManager.RegisterCommand( cmd, ProcessCommand );
@@ -18,12 +17,9 @@ namespace uGameCore.Commands {
 		}
 
 		string ProcessCommand( string command ) {
-
-			//	string invalidSyntaxString = "Invalid syntax.";
-
-			string[] words = command.Split( " ".ToCharArray() );
+			
+			string[] words = CommandManager.SplitCommandIntoArguments (command);
 			int numWords = words.Length ;
-		//	string restOfTheCommand = command.Substring (command.IndexOf (' ') + 1);
 
 			string response = "";
 
@@ -42,26 +38,46 @@ namespace uGameCore.Commands {
 				// test message box
 				// create multiple message boxes with different sizes, text, title
 
-				Vector2[] sizes = new Vector2[]{ new Vector2(300, 100), new Vector2( 320, 200), new Vector2( 500, 300 ), 
-					new Vector2(200, 300), new Vector2( 800, 500 ) };
+				Vector2[] sizes = new Vector2[] { new Vector2 (300, 100), new Vector2 (320, 200), new Vector2 (500, 300), 
+					new Vector2 (200, 300), new Vector2 (800, 500)
+				};
 
 				int[] textLengths = new int[]{ 20, 300 };
 
 				foreach (Vector2 size in sizes) {
 					foreach (int textLength in textLengths) {
 						string text = GenerateRandomString (textLength);
-						var msgBox = Menu.Windows.WindowManager.OpenMessageBox ( (int)size.x, (int)size.y, text, false);
+						var msgBox = Menu.Windows.WindowManager.OpenMessageBox ((int)size.x, (int)size.y, text, false);
 						// use random title length
 						msgBox.Title = GenerateRandomString (Random.Range (0, 30));
 						// set random position on screen
-						msgBox.SetRectangle( new Rect( new Vector2( Random.value * Screen.width, Random.value * Screen.height ), size) );
+						msgBox.SetRectangle (new Rect (new Vector2 (Random.value * Screen.width, Random.value * Screen.height), size));
 					}
+				}
+
+			} else if (words [0] == "msgboxallclients") {
+
+				CommandManager.EnsureServerIsStarted();
+
+				if (numWords < 3) {
+					response += CommandManager.invalidSyntaxText ;
+				} else {
+
+					string title = words [1];
+					string text = CommandManager.GetRestOfTheCommand (command, 1);
+
+					foreach (var script in Player.GetComponentOnAllPlayers<Menu.Windows.Player2Windows> ()) {
+						script.DisplayMsgBoxOnClient( title, text );
+					}
+
 				}
 
 			}
 
+
 			return response;
 		}
+
 
 		private static string GenerateRandomString( int length ) {
 

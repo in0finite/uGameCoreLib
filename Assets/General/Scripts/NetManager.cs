@@ -14,6 +14,8 @@ namespace uGameCore {
 
 			CheckIfNetworkIsStarted ();
 			CheckIfPortIsValid (portNumber);
+			// TODO: check if online scene is assigned
+
 			SetupNetworkManger( "", portNumber );
 			NetworkManager.singleton.StartServer ();
 

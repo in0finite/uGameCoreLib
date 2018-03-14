@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace uGameCore.Commands {
@@ -10,7 +9,7 @@ namespace uGameCore.Commands {
 		void Start () {
 			
 			string[] commands = new string[] { "camera_disable", "uptime", "client_cmd", "kick", "kick_instantly",
-				"exit"};
+				"startserver", "starthost", "connect", "stopnet", "exit"};
 
 			foreach (var cmd in commands) {
 				CommandManager.RegisterCommand( cmd, ProcessCommand );
@@ -20,15 +19,11 @@ namespace uGameCore.Commands {
 		
 		string ProcessCommand( string command ) {
 
-			string invalidSyntaxString = "Invalid syntax.";
-
-			string[] words = command.Split( " ".ToCharArray() );
+			string[] words = CommandManager.SplitCommandIntoArguments (command);
 			int numWords = words.Length ;
-			string restOfTheCommand = command.Substring (command.IndexOf (' ') + 1);
+			string restOfTheCommand = CommandManager.GetRestOfTheCommand (command, 0);
 
 			string response = "";
-
-		//	var networkManager = UnityEngine.Networking.NetworkManager.singleton;
 
 
 			if (2 == numWords && words [0] == "camera_disable") {
@@ -68,31 +63,11 @@ namespace uGameCore.Commands {
 
 				if (NetworkStatus.IsServerStarted ()) {
 					if (numWords < 2)
-						response += invalidSyntaxString;
+						response += CommandManager.invalidSyntaxText;
 					else
 						CommandManager.SendCommandToAllPlayers (restOfTheCommand, true);
 				}
 
-//			} else if (words [0] == "view_log") {
-//
-//				if (2 == numWords) {
-//					int numChars = 0;
-//					if (int.TryParse (words [1], out numChars)) {
-//						int length = this.logString.Length;
-//						if (numChars >= length) {
-//							response += this.logString;
-//						} else {
-//							response += this.logString.Substring (length - numChars);
-//						}
-//					}
-//				} else {
-//					response += this.logString;
-//				}
-//
-//			} else if (words [0] == "clear") {
-//
-//				this.ClearLog ();
-//
 			} else if (words [0] == "kick") {
 
 				if (NetworkStatus.IsServerStarted ()) {
@@ -100,7 +75,7 @@ namespace uGameCore.Commands {
 					if (null == p) {
 						response += "There is no such player connected.";
 					} else {
-						p.DisconnectPlayer ( 3, "You are kicked from server.");
+						p.DisconnectPlayer (3, "You are kicked from server.");
 					}
 
 				} else {
@@ -114,16 +89,14 @@ namespace uGameCore.Commands {
 					if (null == p) {
 						response += "There is no such player connected.";
 					} else {
-						p.DisconnectPlayer ( 0, "");
+						p.DisconnectPlayer (0, "");
 					}
 
 				} else {
 					response += "Only server can use this command.";
 				}
 
-			}
-
-			else if (words [0] == "bot_add") {
+			} else if (words [0] == "bot_add") {
 
 				if (NetworkStatus.IsServerStarted ()) {
 
@@ -213,41 +186,36 @@ namespace uGameCore.Commands {
 					response += "Removed " + count + " bots.";
 				}
 
-			} else if (words [0] == "help") {
+			} else if (words [0] == "startserver" || words[0] == "starthost") {
 
-				// print all available commands
+				int portNumber = NetManager.defaultListenPortNumber;
 
-//				response += "List of available commands:\n" ;
-//				response += "msgbox" + "\n" ;
-//				response += "modal_msgbox" + "\n" ;
-//				if( NetworkStatus.IsServerStarted () ) {
-//					response += "kick" + "\n" ;
-//					response += "kick_instantly" + "\n" ;
-//					response += "team_change" + "\n" ;
-//					response += "endround" + "\n" ;
-//					response += "bot_add" + "\n" ;
-//					response += "bot_add_multiple" + "\n" ;
-//					response += "remove_all_bots" + "\n";
-//				}
-//				response += "list_maps" + "\n" ;
-//				if( NetworkStatus.IsServerStarted () ) {
-//					response += "timeleft" + "\n" ;
-//					response += "nextmap" + "\n" ;
-//					response += "change_scene" + "\n" ;
-//				}
-//				response += "camera_disable" + "\n" ;
-//				response += "say" + "\n" ;
-//				response += "uptime" + "\n" ;
-//				response += "clear" + "\n" ;
-//				response += "exit" + "\n" ;
+				if (numWords > 1)
+					portNumber = int.Parse (words [1]);
+
+				if (words [0] == "startserver")
+					NetManager.StartServer (portNumber);
+				else
+					NetManager.StartHost (portNumber);
+
+			} else if (words [0] == "connect") {
+
+				if (numWords != 3) {
+					response += CommandManager.invalidSyntaxText;
+				} else {
+					string ip = words [1];
+					int port = int.Parse (words [2]);
+
+					NetManager.StartClient (ip, port);
+				}
+
+			} else if (words [0] == "stopnet") {
+
+				NetManager.StopNetwork ();
 
 			} else if (words [0] == "exit") {
 
 				GameManager.singleton.ExitApplication();
-
-			} else {
-				
-			//	response += "Unknown command: " + words[0] + "." ;
 
 			}
 

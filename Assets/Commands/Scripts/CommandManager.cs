@@ -7,7 +7,11 @@ namespace uGameCore.Commands {
 
 	public class CommandManager : MonoBehaviour {
 		
-		static	Dictionary<string, CommandCallback>	registeredCommands = new Dictionary<string, CommandCallback>();
+		static	Dictionary<string, CommandCallback>	m_registeredCommands = new Dictionary<string, CommandCallback>();
+		public	static	IEnumerable<string>	registeredCommands { get { return m_registeredCommands.Keys; } }
+
+		public	static	string	invalidSyntaxText { get { return "Invalid syntax"; } }
+
 
 
 		void Awake() {
@@ -22,31 +26,69 @@ namespace uGameCore.Commands {
 
 		public	static	void	RegisterCommand( string command, CommandCallback callback ) {
 
-			if (registeredCommands.ContainsKey (command))
+			if (m_registeredCommands.ContainsKey (command))
 				return;
 
-			registeredCommands.Add (command, callback);
+			m_registeredCommands.Add (command, callback);
+
+		}
+
+		public	static	bool	RemoveCommand( string command ) {
+
+			return m_registeredCommands.Remove (command);
 
 		}
 
 		public	static	string[]	SplitCommandIntoArguments( string command ) {
 
+			// TODO: add support for arguments that have spaces, i.e. those enclosed with quotes
+
 			return command.Split (new string[]{ " ", "\t" }, System.StringSplitOptions.RemoveEmptyEntries);
+
+		}
+
+		public	static	string	GetRestOfTheCommand( string command, int argumentIndex ) {
+
+			if (argumentIndex < 0)
+				return "";
+
+			string[] args = SplitCommandIntoArguments (command);
+
+			if (argumentIndex > args.Length - 2)
+				return "";
+
+			return string.Join( " ", args, argumentIndex + 1, args.Length - argumentIndex - 1);
 
 		}
 
 		public	static	int		ProcessCommand( string command, ref string response ) {
 
-			response = "Unknown command: " + command;
+			if (string.IsNullOrEmpty (command))
+				return -1;
 
-			string[] words = SplitCommandIntoArguments (command);
-			if (0 == words.Length)
+			string[] arguments = SplitCommandIntoArguments (command);
+			if (0 == arguments.Length)
 				return -1;
 			
+			// find a handler for this command and invoke it
+
 			CommandCallback callback = null;
-			if( registeredCommands.TryGetValue( words[0], out callback ) ) {
-				response = callback (command);
+			if (m_registeredCommands.TryGetValue (arguments [0], out callback)) {
+
+				// we need separate variable, because 'ref' parameters can not be used in lambda
+				string responseFromHandler = "";
+
+				// TODO: should this be exception safe ?
+				Utilities.Utilities.RunExceptionSafe (() => {
+					responseFromHandler = callback (command);
+				});
+
+				// assign response
+				response = responseFromHandler ;
+
 				return 0;
+			} else {
+				response = "Unknown command: " + command;
 			}
 
 			return -1;
@@ -56,7 +98,7 @@ namespace uGameCore.Commands {
 
 			string response = "List of available commands:\n";
 
-			foreach (var pair in registeredCommands) {
+			foreach (var pair in m_registeredCommands) {
 				response += pair.Key + "\n";
 			}
 
@@ -69,6 +111,17 @@ namespace uGameCore.Commands {
 
 			foreach (var p in PlayerManager.players) {
 				p.RpcExecuteCommandOnClient( command, sendResponse );
+			}
+
+		}
+
+		/// <summary>
+		/// Throws exception if server is not started, with explanation that command can only be used on server.
+		/// </summary>
+		public	static	void	EnsureServerIsStarted() {
+
+			if (!NetworkStatus.IsServerStarted ()) {
+				throw new System.Exception ("Only server can use this command");
 			}
 
 		}

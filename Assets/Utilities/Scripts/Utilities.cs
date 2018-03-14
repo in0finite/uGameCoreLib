@@ -30,6 +30,18 @@ namespace uGameCore.Utilities
 
 		}
 
+		public	static	void	RunExceptionSafe( System.Action function ) {
+
+			try {
+				function();
+			} catch(System.Exception ex) {
+				try {
+					Debug.LogException (ex);
+				} catch {}
+			}
+
+		}
+
 		/// <summary>
 		/// Invokes all subscribed delegates, and makes sure any exception is caught and logged, so that all
 		/// subscribers will be notified.
