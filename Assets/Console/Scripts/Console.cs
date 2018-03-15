@@ -85,7 +85,7 @@ namespace uGameCore.Menu {
 
 			// register functions for displaying our stats
 			RegisterStats( () => { return "FPS: " + GameManager.GetAverageFps() ; } );
-			RegisterStats( () => { return "uptime: " + (int)Time.time ; } );
+			RegisterStats( () => { return "uptime: " + Utilities.Utilities.FormatElapsedTime( Time.realtimeSinceStartup ) ; } );
 
 		}
 
@@ -491,7 +491,7 @@ namespace uGameCore.Menu {
 
 			// display uptime
 			if (NetworkStatus.IsServerStarted ()) {
-				GUILayout.Label (" uptime: " + (int)Time.time);
+				GUILayout.Label (" uptime: " + Utilities.Utilities.FormatElapsedTime( Time.realtimeSinceStartup ) );
 			}
 
 			// let anybody else display their own stats

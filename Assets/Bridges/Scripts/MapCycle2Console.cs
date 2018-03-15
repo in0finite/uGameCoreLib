@@ -34,7 +34,7 @@ namespace uGameCore {
 		}
 
 		static string GetTextForConsole1() {
-			return " map time: " + (int)MapCycle.singleton.TimePassedSinceStartedMap;
+			return " map time: " + Utilities.Utilities.FormatElapsedTime (MapCycle.singleton.TimePassedSinceStartedMap);
 		}
 
 		static string GetTextForConsole2() {

@@ -44,9 +44,7 @@ namespace uGameCore.Commands {
 
 			} else if (words [0] == "uptime") {
 
-				int minutes = Mathf.FloorToInt (Time.realtimeSinceStartup / 60);
-				int seconds = Mathf.FloorToInt (Time.realtimeSinceStartup) % 60;
-				response += minutes + ":" + seconds;
+				response += Utilities.Utilities.FormatElapsedTime (Time.realtimeSinceStartup);
 
 			}
 //			else if (words [0] == "server_cmd") {

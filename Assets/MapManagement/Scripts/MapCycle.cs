@@ -151,16 +151,8 @@ namespace uGameCore.MapManagement {
 		public	string		GetTimeLeftAsString() {
 
 			int timeLeft = this.GetTimeLeft ();
-			int minutes = timeLeft / 60;
-			int seconds = timeLeft % 60;
 
-			string s = "" ;
-			s += minutes + ":";
-			if (seconds < 10)
-				s += "0";
-			s += seconds;
-
-			return s;
+			return Utilities.Utilities.FormatElapsedTime (timeLeft);
 		}
 
 		public	bool	IsValidMapName(string name) {
