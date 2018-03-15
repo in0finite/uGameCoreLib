@@ -8,7 +8,7 @@ namespace uGameCore.Commands {
 
 		void Start () {
 			
-			string[] commands = new string[] { "camera_disable", "uptime", "client_cmd", "kick", "kick_instantly",
+			string[] commands = new string[] { "camera_disable", "uptime", "client_cmd", "players", "kick", "kick_instantly",
 				"startserver", "starthost", "connect", "stopnet", "exit"};
 
 			foreach (var cmd in commands) {
@@ -66,6 +66,22 @@ namespace uGameCore.Commands {
 						response += CommandManager.invalidSyntaxText;
 					else
 						CommandManager.SendCommandToAllPlayers (restOfTheCommand, true);
+				}
+
+			} else if (words [0] == "players") {
+
+				// list all players
+
+				response += "name | net id";
+				if (NetworkStatus.IsServerStarted ())
+					response += " | ip";
+				response += "\n";
+
+				foreach (var player in PlayerManager.players) {
+					response += player.playerName + " | " + player.netId.Value;
+					if (NetworkStatus.IsServerStarted ())
+						response += " | " + player.connectionToClient.address;
+					response += "\n";
 				}
 
 			} else if (words [0] == "kick") {
