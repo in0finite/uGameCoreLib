@@ -122,6 +122,10 @@ namespace uGameCore {
 			return NetworkStatus.IsClientConnected();
 		}
 
+		public	static	bool	IsClientActive() {
+			return ! NetworkStatus.IsClientDisconnected ();
+		}
+
 
 	}
 
