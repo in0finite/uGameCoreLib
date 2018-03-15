@@ -508,17 +508,18 @@ namespace uGameCore {
 		[Command]
 		private	void	CmdChangeNick( string newNick ) {
 
-			Player p = this;
-
 
 			if (!PlayerManager.IsValidPlayerName (newNick)) {
 				return;
 			}
 
-			// also check if another player has this name
+			if (PlayerManager.GetPlayerByName (newNick) != null) {
+				// player with this name already exists
+				return;
+			}
 
 
-			p.playerName = newNick;
+			this.playerName = newNick;
 
 		}
 
