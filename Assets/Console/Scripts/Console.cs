@@ -223,12 +223,15 @@ namespace uGameCore.Menu {
 				Debug.LogException (ex);
 			}
 
-			// add this command to list of executed commands
-			m_history.Add (textToProcess);
-			if (m_history.Count > 100) {
-				m_history.RemoveAt (0);
+			if (textToProcess.Length > 0) {
+				// add this command to list of executed commands
+				m_history.Add (textToProcess);
+				if (m_history.Count > 100) {
+					m_history.RemoveAt (0);
+				}
 			}
 
+			// reset history browsing
 			m_historyBrowserIndex = -1;
 
 		}
