@@ -172,6 +172,7 @@ namespace uGameCore {
 
 		// NetworkManager extensions
 
+		[System.Obsolete("", true)]
 		public	static	void	StartClient( this NetworkManager netMgr, string serverIp, int serverPort ) {
 
 			netMgr.networkAddress = serverIp;
@@ -180,6 +181,7 @@ namespace uGameCore {
 
 		}
 
+		[System.Obsolete("", true)]
 		public	static	void	StopServerAndHost( this NetworkManager netMgr ) {
 
 			netMgr.StopServer ();
@@ -187,18 +189,21 @@ namespace uGameCore {
 
 		}
 
+		[System.Obsolete("", true)]
 		public	static	bool	IsServer( this NetworkManager netMgr ) {
 
 			return NetworkStatus.IsServerStarted ();
 
 		}
 
+		[System.Obsolete("", true)]
 		public	static	bool	IsClient( this NetworkManager netMgr ) {
 
 			return NetworkStatus.IsClientConnected ();
 
 		}
 
+		[System.Obsolete("", true)]
 		public	static	bool	IsHost( this NetworkManager netMgr ) {
 
 			if (!netMgr.IsServer ())
