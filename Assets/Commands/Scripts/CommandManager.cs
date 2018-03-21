@@ -6,15 +6,24 @@ namespace uGameCore.Commands {
 	using CommandCallback = System.Func<string, string> ;
 
 	public class CommandManager : MonoBehaviour {
-		
+
+		public	static	CommandManager	singleton { get ; private set ; }
+
 		static	Dictionary<string, CommandCallback>	m_registeredCommands = new Dictionary<string, CommandCallback>();
 		public	static	IEnumerable<string>	registeredCommands { get { return m_registeredCommands.Keys; } }
 
 		public	static	string	invalidSyntaxText { get { return "Invalid syntax"; } }
 
+		[SerializeField]	private	List<string>	m_forbiddenCommands = new List<string>();
+		/// <summary> Forbidden commands can not be registered. </summary>
+		public	static	List<string>	forbiddenCommands { get { return singleton.m_forbiddenCommands; } }
+
 
 
 		void Awake() {
+
+			if (null == singleton)
+				singleton = this;
 
 			RegisterCommand( "help", ProcessHelpCommand );
 
@@ -25,6 +34,11 @@ namespace uGameCore.Commands {
 		}
 
 		public	static	void	RegisterCommand( string command, CommandCallback callback ) {
+
+			if (CommandManager.forbiddenCommands.Contains (command)) {
+				// this command is forbidden
+				return ;
+			}
 
 			if (m_registeredCommands.ContainsKey (command))
 				return;
