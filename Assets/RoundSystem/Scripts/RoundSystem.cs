@@ -103,7 +103,7 @@ namespace uGameCore.RoundManagement {
 
 			if (TeamManager.IsFreeForAllModeOn ()) {
 				int numAlivePlayers = PlayerManager.players.Count(p => p.IsAlive());
-				int numNonSpectatingPlayers = PlayerManager.players.Count(p => ! p.IsSpectating());
+				int numNonSpectatingPlayers = PlayerManager.players.Count(p => ! p.IsSpectator());
 				if (1 >= numAlivePlayers) {
 					// either 1 player is alive, or none
 					if (numNonSpectatingPlayers > numAlivePlayers) {

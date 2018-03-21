@@ -21,7 +21,7 @@ namespace uGameCore.RoundManagement {
 			
 			// check if player can be spawned immediately
 
-			if (m_player.IsSpectating())
+			if (m_player.IsSpectator())
 				return;
 
 		//	m_shouldBeSpawnedInNextRound = true;
@@ -49,7 +49,7 @@ namespace uGameCore.RoundManagement {
 			if (!m_player.IsLoggedIn ())
 				return;
 
-			if (m_player.IsSpectating ())
+			if (m_player.IsSpectator ())
 				return;
 
 		//	if (!m_player.ChoosedTeam)

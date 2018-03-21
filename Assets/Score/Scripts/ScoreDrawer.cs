@@ -617,7 +617,7 @@ namespace uGameCore.Score {
 
 			foreach (var p in PlayerManager.players) {
 				
-				if (p.IsSpectating ()) {
+				if (p.IsSpectator ()) {
 					spectatingPlayers.Add (p);
 				} else {
 					int index = rowsPerTeam.FindIndex (r => r.team == p.Team);

@@ -259,7 +259,7 @@ namespace uGameCore {
 
 		}
 
-		public	bool	IsSpectating() {
+		public	bool	IsSpectator() {
 			
 			return m_teamChooser.IsSpectator ;
 
