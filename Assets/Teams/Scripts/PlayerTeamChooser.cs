@@ -72,7 +72,8 @@ namespace uGameCore {
 
 
 		/// <summary>
-		/// If the current team is different, destroys playing object and changes the player team.
+		/// If the current team is different, destroys playing object and changes the player team. If FFA is on,
+		/// player will not be spectator.
 		/// </summary>
 		public	void	ChangeTeam( string newTeam ) {
 
@@ -88,8 +89,16 @@ namespace uGameCore {
 
 				m_team = newTeam;
 
-				// TODO: also assign 'm_isSpectating' ?
+				// update spectator status
+				if (!TeamManager.FFA) {
+					m_isSpectator = ! TeamManager.teamNames.Contains (newTeam);
+				}
 
+			}
+
+			// update spectator status
+			if (TeamManager.FFA) {
+				m_isSpectator = false;
 			}
 
 		}
