@@ -23,6 +23,13 @@ namespace uGameCore.Utilities {
 		}
 		
 
+		public	static	void	Broadcast( System.Exception exception ) {
+
+			Utilities.SendMessageToAllMonoBehaviours ("OnFailedToStartServer", 
+				new FailedToStartServerMessage (exception));
+
+		}
+
 	}
 
 }

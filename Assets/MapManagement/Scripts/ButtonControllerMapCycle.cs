@@ -38,8 +38,7 @@ namespace uGameCore.MapManagement {
 				Debug.LogException (ex);
 
 				// notify scripts
-				Utilities.Utilities.SendMessageToAllMonoBehaviours ("OnFailedToStartServer", 
-					new Utilities.FailedToStartServerMessage (ex));
+				Utilities.FailedToStartServerMessage.Broadcast( ex );
 			}
 
 		}
