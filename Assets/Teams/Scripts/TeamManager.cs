@@ -8,6 +8,7 @@ namespace uGameCore {
 	public class TeamManager : MonoBehaviour {
 
 		public	List<string>	teams = new List<string> ();
+		public	static	string[]	teamNames { get { return singleton.teams.ToArray (); } }
 		public	static	int	TeamCount { get { return singleton.teams.Count; } }
 
 		public	bool	isFriendlyFireOn = false ;
@@ -16,7 +17,10 @@ namespace uGameCore {
 		/// </summary>
 		[SerializeField]	private	bool	isFreeForAllModeOn = false ;
 
+		public	static	bool	FFA { get { return TeamManager.IsFreeForAllModeOn (); } }
+
 		public	static	TeamManager	singleton { get ; private set ; }
+
 
 
 		void Awake () {

@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Linq;
 
 namespace uGameCore {
 	
@@ -11,24 +11,41 @@ namespace uGameCore {
 
 		private	bool	m_shouldChooseTeam = false;
 		private	bool	m_shouldSendChooseTeamMessage = false;
+		private	List<string>	m_teamsToChooseFrom = new List<string>();
+		private	string	m_titleForChoosingTeams = "";
 
 		[SyncVar]	private	string	m_team = "" ;
 		public	string Team { get { return m_team; } protected set { m_team = value; } }
 
-		private	bool	m_isSpectating = true ;
-		public	bool	IsSpectating { get { return this.m_isSpectating; } }
+		private	bool	m_isSpectator = true ;
+		public	bool	IsSpectator { get { return this.m_isSpectator; } }
 
 		public	bool	resetTeamOnSceneChange = true ;
+		public	bool	sendChooseTeamMessageIfFFAIsOn = true ;
 
 		public	static	event System.Action<string[]>	onReceivedChooseTeamMessage = delegate {};
+
+		/// <summary>
+		/// Info about received choose-team message.
+		/// </summary>
+		public class ReceivedChoosedTeamMessageInfo {
+			private string[] teams = null;
+			private string title = "";
+			public string[] Teams { get { return this.teams; } }
+			public string Title { get { return this.title; } }
+			public ReceivedChoosedTeamMessageInfo (string[] teams, string title)
+			{
+				this.teams = teams;
+				this.title = title;
+			}
+		}
 
 
 
 		void Awake () {
 			m_player = GetComponent<Player> ();
 		}
-		
-		// Update is called once per frame
+
 		void Update () {
 
 			if (!this.isServer)
@@ -41,22 +58,12 @@ namespace uGameCore {
 				if (!SceneChanger.isLoadingScene && m_player.conn.isReady) {
 
 					m_shouldSendChooseTeamMessage = false;
-
 					m_shouldChooseTeam = true;
 
-					Debug.Log ("Sending choose team message to " + m_player.playerName);
+					Debug.Log ("Sending choose-team message to " + m_player.playerName);
 
-					string[] teams = null;
-					if (TeamManager.IsFreeForAllModeOn()) {
-						// free for all mode ?
+					this.RpcChooseTeam (m_teamsToChooseFrom.ToArray (), m_titleForChoosingTeams);
 
-						teams = new string[]{ "Play" };
-					} else {
-						
-						teams = TeamManager.singleton.teams.ToArray ();
-					}
-
-					this.RpcChooseTeam (teams);
 				}
 
 			}
@@ -80,39 +87,62 @@ namespace uGameCore {
 				m_player.DestroyPlayingObject ();
 
 				m_team = newTeam;
+
+				// TODO: also assign 'm_isSpectating' ?
+
 			}
 
 		}
 
 
 		void OnLoggedIn() {
-
-			m_shouldSendChooseTeamMessage = true;
+			
+			this.OfferPlayerToChooseTeam ();
 
 		}
 
 		void OnSceneChanged( SceneChangedInfo info ) {
 
-			if (!this.isServer)
+			if (!NetworkStatus.IsServer ())
 				return;
 
 			if (this.resetTeamOnSceneChange) {
 				m_team = "";
-				m_isSpectating = true;
+				m_isSpectator = true;
 				m_shouldChooseTeam = false;
-				m_shouldSendChooseTeamMessage = true;
+				m_shouldSendChooseTeamMessage = false;
+
+				this.OfferPlayerToChooseTeam ();
 			}
 
 		}
 
-		public	void	SendChooseTeamMessage( string[] teams ) {
+		public	bool	OfferPlayerToChooseTeam() {
 
-			this.RpcChooseTeam (teams);
+			if (!NetworkStatus.IsServer ())
+				return false;
 
+			if (TeamManager.FFA && !this.sendChooseTeamMessageIfFFAIsOn)
+				return false;
+
+			m_teamsToChooseFrom.Clear ();
+
+			if (TeamManager.FFA) {
+				m_teamsToChooseFrom.AddRange (new string[]{ "Play" });
+				m_titleForChoosingTeams = "";
+			} else {
+				m_teamsToChooseFrom.AddRange (TeamManager.teamNames);
+				m_titleForChoosingTeams = "Choose team";
+			}
+
+			m_shouldChooseTeam = false;
+			m_shouldSendChooseTeamMessage = true;
+
+			return true;
 		}
 
 		[ClientRpc]
-		private	void	RpcChooseTeam( string[] teams ) {
+		private	void	RpcChooseTeam( string[] teams, string title ) {
 			// Server tells us that we can choose team.
 
 			if (!isLocalPlayer) {
@@ -121,7 +151,7 @@ namespace uGameCore {
 
 			Debug.Log ("Received choose team message.");
 
-			this.gameObject.BroadcastMessageNoExceptions ("OnReceivedChooseTeamMessage", (object) teams);
+			this.gameObject.BroadcastMessageNoExceptions ("OnReceivedChooseTeamMessage", new ReceivedChoosedTeamMessageInfo(teams, title) );
 
 			onReceivedChooseTeamMessage (teams);
 
@@ -136,8 +166,6 @@ namespace uGameCore {
 		[Command]
 		private	void	CmdTeamChoosed( string teamName ) {
 
-			#if SERVER
-
 
 			if(!m_shouldChooseTeam) {
 				return ;
@@ -146,36 +174,34 @@ namespace uGameCore {
 			m_shouldChooseTeam = false ;
 
 
-			if("Play" == teamName) {
-				if(!TeamManager.IsFreeForAllModeOn()) {
-					// invalid team
-					// send him message again
-					m_shouldSendChooseTeamMessage = true ;
-					return;
+			if (TeamManager.FFA) {
+				// FFA is on - we have only 1 predefined option
 
+				if ("Play" == teamName) {
+					this.Team = "";
+					m_isSpectator = false;
 				} else {
-					this.Team = "" ;
-					m_isSpectating = false ;
-				}
-			} else {
-
-				if (!TeamManager.singleton.teams.Contains (teamName)) {
 					// invalid team
-					// send him message again
-					m_shouldSendChooseTeamMessage = true ;
+					return;
+				}
+
+			} else {
+				// FFA is off
+
+				// player must select one of the existing teams
+				if (!TeamManager.teamNames.Contains (teamName)) {
+					// invalid team
 					return;
 				}
 
 				m_team = teamName;
-			//	m_isSpectating = TeamManager.IsTeamSpectatingTeam( teamName );
-				m_isSpectating = false ;
+				m_isSpectator = false;
 			}
+
 
 			Debug.Log (m_player.playerName + " choosed team: " + teamName);
 
 			this.BroadcastChoosedTeamMessage( teamName );
-
-			#endif
 
 		}
 

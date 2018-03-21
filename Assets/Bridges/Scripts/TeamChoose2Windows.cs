@@ -10,7 +10,7 @@ namespace uGameCore.Menu.Windows {
 		public	Rect	cancelButtonNormalizedRect = new Rect (0.01f, 0.01f, 0.15f, 0.075f);
 
 
-		void OnReceivedChooseTeamMessage( string[] teams ) {
+		void OnReceivedChooseTeamMessage( PlayerTeamChooser.ReceivedChoosedTeamMessageInfo messageInfo ) {
 
 			CloseAllChooseTeamWindows ();
 
@@ -19,7 +19,7 @@ namespace uGameCore.Menu.Windows {
 			Rect rect = WindowManager.GetCenteredRect( 0.5f, 0.5f );
 
 			var array = new Window[1];
-			array[0] = WindowManager.OpenWindow (rect, "Choose team", teams, false, (s, go) => {
+			array[0] = WindowManager.OpenWindow (rect, messageInfo.Title, messageInfo.Teams, false, (s, go) => {
 					go.GetComponent<Button>().onClick.AddListener( () => {
 					// team choosed
 					Player.local.GetComponent<PlayerTeamChooser>().TeamChoosed (s);
