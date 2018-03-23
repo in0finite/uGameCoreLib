@@ -120,6 +120,23 @@ namespace uGameCore.Menu {
 
 			this.Open (this.gameOverMenuName);
 
+			// reset text
+			SetGameOverMenuDescriptionText( "" );
+
+		}
+
+		public	static	void	SetGameOverMenuDescriptionText( string descriptionText ) {
+
+			Menu menu = FindMenuByName( singleton.gameOverMenuName );
+			if (menu) {
+				var descriptionTransform = menu.transform.FindChild ("GameSummary");
+				if (descriptionTransform) {
+					var textComponent = descriptionTransform.GetComponentInChildren<Text> ();
+					if (textComponent)
+						textComponent.text = descriptionText;
+				}
+			}
+
 		}
 
 		/// <summary> Opens parent of the current menu, if it exists. </summary>
@@ -160,6 +177,12 @@ namespace uGameCore.Menu {
 
 		}
 
+
+		public	static	Menu	GetOpenedMenu() {
+
+			return FindMenuByName (singleton.openedMenuName);
+
+		}
 
 		public	static	Menu	FindMenuByName( string menuName ) {
 
