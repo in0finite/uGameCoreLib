@@ -41,6 +41,8 @@ namespace uGameCore.Settings {
 		private	static	int	m_fpsMax = 60;
 		public static int Fps_max { get { return m_fpsMax; } set { m_fpsMax = value; GameManager.singleton.SetMaximumFps ( (int)value, false); } }
 
+		public	bool	registerInputCvars = true;
+
 		public static float Mouse_sensitivity_x { get ; set ; }
 
 		public static float Mouse_sensitivity_y { get ; set ; }
@@ -68,10 +70,6 @@ namespace uGameCore.Settings {
 
 			singleton = this;
 
-		//	var field = this.GetType ().GetField ("nick", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-		//	var cvar = (CVar) field.GetCustomAttributes (typeof(CVar), true) [0];
-		//	cvar.minLength = PlayerManager.GetMinimumNickLength ();
-		//	cvar.maxLength = PlayerManager.GetMaxmimumNickLength ();
 
 			CVarManager.onAddCVars += this.AddCvars;
 
@@ -97,50 +95,54 @@ namespace uGameCore.Settings {
 
 			CVarManager.AddCVar (cvar);
 
-			cvar = new CVar ();
-			cvar.name = "mouse_sensitivity_x";
-			cvar.minValue = 0;
-			cvar.maxValue = 2000;
-			cvar.getValue = () => Mouse_sensitivity_x;
-			cvar.setValue = (arg) => Mouse_sensitivity_x = (float) arg;
+			if (this.registerInputCvars) {
 
-			CVarManager.AddCVar (cvar);
+				cvar = new CVar ();
+				cvar.name = "mouse_sensitivity_x";
+				cvar.minValue = 0;
+				cvar.maxValue = 2000;
+				cvar.getValue = () => Mouse_sensitivity_x;
+				cvar.setValue = (arg) => Mouse_sensitivity_x = (float)arg;
 
-			cvar = new CVar ();
-			cvar.name = "mouse_sensitivity_y";
-			cvar.minValue = 0;
-			cvar.maxValue = 2000;
-			cvar.getValue = () => Mouse_sensitivity_y;
-			cvar.setValue = (arg) => Mouse_sensitivity_y = (float) arg;
+				CVarManager.AddCVar (cvar);
 
-			CVarManager.AddCVar (cvar);
+				cvar = new CVar ();
+				cvar.name = "mouse_sensitivity_y";
+				cvar.minValue = 0;
+				cvar.maxValue = 2000;
+				cvar.getValue = () => Mouse_sensitivity_y;
+				cvar.setValue = (arg) => Mouse_sensitivity_y = (float)arg;
 
-			cvar = new CVar ();
-			cvar.name = "Accelerometer minimum horizontal value";
-			cvar.minValue = 0;
-			cvar.maxValue = 1;
-			cvar.getValue = () => MinAccHorizontalValue;
-			cvar.setValue = (arg) => MinAccHorizontalValue = (float) arg;
+				CVarManager.AddCVar (cvar);
 
-			CVarManager.AddCVar (cvar);
+				cvar = new CVar ();
+				cvar.name = "Accelerometer minimum horizontal value";
+				cvar.minValue = 0;
+				cvar.maxValue = 1;
+				cvar.getValue = () => MinAccHorizontalValue;
+				cvar.setValue = (arg) => MinAccHorizontalValue = (float)arg;
 
-			cvar = new CVar ();
-			cvar.name = "Accelerometer minimum vertical value";
-			cvar.minValue = 0;
-			cvar.maxValue = 1;
-			cvar.getValue = () => MinAccVerticalValue;
-			cvar.setValue = (arg) => MinAccVerticalValue = (float) arg;
+				CVarManager.AddCVar (cvar);
 
-			CVarManager.AddCVar (cvar);
+				cvar = new CVar ();
+				cvar.name = "Accelerometer minimum vertical value";
+				cvar.minValue = 0;
+				cvar.maxValue = 1;
+				cvar.getValue = () => MinAccVerticalValue;
+				cvar.setValue = (arg) => MinAccVerticalValue = (float)arg;
 
-			cvar = new CVar ();
-			cvar.name = "Accelerometer vertical offset";
-			cvar.minValue = 0;
-			cvar.maxValue = 1;
-			cvar.getValue = () => AccVerticalOffset;
-			cvar.setValue = (arg) => AccVerticalOffset = (float) arg;
+				CVarManager.AddCVar (cvar);
 
-			CVarManager.AddCVar (cvar);
+				cvar = new CVar ();
+				cvar.name = "Accelerometer vertical offset";
+				cvar.minValue = 0;
+				cvar.maxValue = 1;
+				cvar.getValue = () => AccVerticalOffset;
+				cvar.setValue = (arg) => AccVerticalOffset = (float)arg;
+
+				CVarManager.AddCVar (cvar);
+
+			}
 
 		}
 
