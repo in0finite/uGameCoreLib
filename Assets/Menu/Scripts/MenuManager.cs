@@ -216,6 +216,13 @@ namespace uGameCore.Menu {
 			return menu.GetComponent<Canvas> ();
 		}
 
+		public	static	Menu	FindJoinGameMenu() {
+
+			return MenuManager.FindMenuByName ("JoinGameMenu");
+
+		}
+
+
 		public Transform	FindChildOfMenu(RectTransform menu, string childName) {
 
 			return System.Array.Find (menu.GetComponentsInChildren<Transform> (), t => t.name == childName);
@@ -250,7 +257,18 @@ namespace uGameCore.Menu {
 
 				var menu = MenuManager.FindMenuByNameOrThrow ("JoinGameMenu");
 
-				var rectTransform = menu.GetRectTransform ();
+				var tabView = menu.GetComponentInChildren<Utilities.UI.TabView>();
+				if(null == tabView)
+					throw new Utilities.ObjectNotFoundException("Failed to find TabView");
+
+				if(null == tabView.ActiveTab)
+					throw new System.Exception("No tab is selected");
+
+				if(tabView.ActiveTab.tabButtonText != "Direct")
+					throw new System.NotSupportedException("Currently, you can only connect to server by " +
+						"specifying his address manually in Direct tab");
+
+				RectTransform rectTransform = tabView.ActiveTab.panel.GetRectTransform ();
 
 				string ip = ReadInputField( rectTransform, "Ip");
 				int port = int.Parse (ReadInputField (rectTransform, "PortNumber"));

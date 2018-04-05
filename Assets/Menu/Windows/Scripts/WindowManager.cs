@@ -21,6 +21,7 @@ namespace uGameCore.Menu.Windows {
 		public	GameObject	textPrefab = null;
 		public	GameObject	buttonPrefab = null;
 
+		// TODO: msgbox size should be in absolute coordinates ?
 		public	Vector2	msgBoxSize = new Vector2( 0.25f, 0.2f );
 
 
