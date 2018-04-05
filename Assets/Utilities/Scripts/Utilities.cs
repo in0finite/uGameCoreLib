@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using System.Linq;
 
 namespace uGameCore.Utilities
 {
@@ -148,6 +149,36 @@ namespace uGameCore.Utilities
 			sb.Append (seconds);
 
 			return sb.ToString ();
+		}
+
+
+		public	static	System.Reflection.Assembly	GetEditorAssembly() {
+
+			return System.AppDomain.CurrentDomain.GetAssemblies ().
+				SingleOrDefault (assembly => assembly.GetName ().Name == "UnityEditor");
+
+		}
+
+		public	static	void	MarkObjectAsDirty( UnityEngine.Object obj ) {
+
+			if (!Application.isEditor)
+				return;
+
+			if (Application.isPlaying)
+				return;
+
+			var asm = Utilities.GetEditorAssembly ();
+			if (asm != null) {
+				var type = asm.GetType( "UnityEditor.EditorUtility" );
+				if (type != null) {
+					var method = type.GetMethod ("SetDirty", 
+						System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+					if (method != null) {
+						method.Invoke (null, new object[]{ obj });
+					}
+				}
+			}
+
 		}
 
 

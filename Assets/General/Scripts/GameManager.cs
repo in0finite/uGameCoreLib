@@ -796,7 +796,7 @@ namespace uGameCore {
 			if(Application.isEditor) {
 				// exit play mode using reflection
 
-				var asm = GetEditorAssembly();
+				var asm = Utilities.Utilities.GetEditorAssembly();
 				var type = asm.GetType( "UnityEditor.EditorApplication" );
 				var prop = type.GetProperty("isPlaying");
 				prop.SetValue( null, (object) false, null );
@@ -807,14 +807,6 @@ namespace uGameCore {
 			}
 
 			#endif
-
-		}
-
-
-		private	static	Assembly	GetEditorAssembly() {
-
-			return System.AppDomain.CurrentDomain.GetAssemblies ().
-				SingleOrDefault (assembly => assembly.GetName ().Name == "UnityEditor");
 
 		}
 

@@ -10,12 +10,31 @@ namespace uGameCore {
 	public static	class ExtensionMethods {
 
 
+		// T should inherit UnityEngine.Object
 		public	static	IEnumerable<T>	WhereNotNull<T>( this IEnumerable<T> enumerable ) where T : class {
 
 			foreach (var el in enumerable) {
 				if (el != null)
 					yield return el;
 			}
+
+		}
+
+		/// <summary>
+		/// Returns alive objects in a collection.
+		/// </summary>
+		public	static	IEnumerable<T>	WhereAlive<T>( this IEnumerable<T> enumerable ) where T : UnityEngine.Object {
+
+			foreach (var el in enumerable) {
+				if (el)
+					yield return el;
+			}
+
+		}
+
+		public	static	int	RemoveAllDeadObjects<T>( this List<T> list ) where T : UnityEngine.Object {
+
+			return list.RemoveAll (obj => (! obj) );
 
 		}
 
@@ -392,6 +411,14 @@ namespace uGameCore {
 			Vector2 parentSize = rectTransform.GetParentDimensions ();
 
 			return new Vector2 (pos.x / parentSize.x, pos.y / parentSize.y);
+		}
+
+		public	static	void	SetNormalColor( this UnityEngine.UI.Button button, Color normalColor ) {
+
+			var colors = button.colors;
+			colors.normalColor = normalColor;
+			button.colors = colors;
+
 		}
 
 	}

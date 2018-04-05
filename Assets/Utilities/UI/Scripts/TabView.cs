@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Linq;
 
 namespace uGameCore.Utilities.UI {
 	
@@ -12,9 +13,9 @@ namespace uGameCore.Utilities.UI {
 	//	public	RectTransform	rectTransform { get { return m_rectTransform; } private set { m_rectTransform = value; } }
 		public	RectTransform	rectTransform { get { return this.GetComponent<RectTransform>(); } }
 
-	//	private	List<Tab>	m_tabs = new List<Tab>();
-		
-		public List<Tab> Tabs { get {
+		[SerializeField]	private	List<Tab>	m_tabs = new List<Tab>();
+
+		public List<Tab> TabsInChildren { get {
 				var tabs = new List<Tab> (this.transform.childCount / 2);
 				foreach (Transform child in this.transform) {
 					var tab = child.GetComponent<Tab> ();
@@ -25,15 +26,22 @@ namespace uGameCore.Utilities.UI {
 			}
 		}
 
+		/// <summary>
+		/// List of tabs. You can modify it as you wish, but you need to manually update TabView.
+		/// </summary>
+		public	List<Tab>	GetTabsList() { return m_tabs; }
+
+		public	int	NumTabs { get { return m_tabs.Count; } }
+
 		private	Tab m_activeTab = null;
 		public Tab ActiveTab { get { return this.m_activeTab; } }
 
 
-		public	Func<string, RectTransform>	createTabPanelFunction ;
-		public	Func<string, RectTransform>	createTabButtonFunction ;
+	//	public	Func<string, RectTransform>	createTabPanelFunction ;
+	//	public	Func<string, RectTransform>	createTabButtonFunction ;
 
-		public	Action<RectTransform>	setTabButtonPositionFunction ;
-		public	Action<RectTransform>	setTabPanelPositionFunction ;
+	//	public	Action<RectTransform>	setTabButtonPositionFunction ;
+	//	public	Action<RectTransform>	setTabPanelPositionFunction ;
 
 		public	Action<Tab>	activateTabFunction ;
 		public	Action<Tab>	deactivateTabFunction ;
@@ -46,39 +54,49 @@ namespace uGameCore.Utilities.UI {
 
 		public	bool	bestFitForButtonText = false;
 
-		public	int		tabHeight = 30 ;
+		public	Color	activeTabColor = Color.gray ;
 
+		/// <summary> Height of area where tab buttons are placed. </summary>
+		public	int		tabHeight = 35 ;
+
+		public	int		tabButtonHeight { get { return this.tabHeight - this.tabsPaddingTop - this.tabsPaddingBottom; } }
+
+		public	int tabsPaddingTop = 5;
+		public	int	tabsPaddingLeft = 5;
+		public	int	tabsPaddingBottom = 0;
+
+		public	int	spaceBetweenTabButtons = 5;
+
+		/*
 		/// <summary>
 		/// Tabs shown in inspector. The actual real tabs are located in child objects.
 		/// </summary>
 		[SerializeField]	private	List<string>	m_tabsForInspector = new List<string>();
+		*/
 
 
 
 		private	TabView() {
 
-			createTabPanelFunction = CreateTabPanel;
-			createTabButtonFunction = CreateTabButton;
-			setTabButtonPositionFunction = SetPositionOfTabButton;
-			setTabPanelPositionFunction = SetPositionOfTabPanel;
+		//	createTabPanelFunction = CreateTabPanel;
+		//	createTabButtonFunction = CreateTabButton;
+		//	setTabButtonPositionFunction = SetPositionOfTabButton;
+		//	setTabPanelPositionFunction = SetPositionOfTabPanel;
 			activateTabFunction = ActivateTab;
 			deactivateTabFunction = DeactivateTab;
 
 		}
 
-		public Tab AddTab ( string name ) {
+		/// <summary>
+		/// Creates new tab. It doesn't set position of tab button or panel.
+		/// </summary>
+		public Tab AddTab ( string tabName ) {
 			
 			// add tab button as child of this game object
-			var tabButton = createTabButtonFunction( name );
-
-			// set position of tab button
-			setTabButtonPositionFunction (tabButton);
+			var tabButton = CreateTabButton( tabName );
 
 			// panel will also be the child of this game object
-			var panel = createTabPanelFunction (name);
-
-			// set position of panel
-			setTabPanelPositionFunction (panel);
+			var panel = CreateTabPanel (tabName);
 
 
 			// attach tab script
@@ -88,7 +106,11 @@ namespace uGameCore.Utilities.UI {
 			tab.panel = panel;
 
 
-		//	m_tabs.Add (tab);
+			m_tabs.Add (tab);
+
+			MySetDirty (tabButton.gameObject);
+			MySetDirty (tab);	// not sure if it is needed
+			MySetDirty (this);	// list of tabs is modified
 
 			this.onTabAdded (tab);
 
@@ -127,19 +149,7 @@ namespace uGameCore.Utilities.UI {
 //			return (int) (this.transform.parent as RectTransform).rect.height;
 //		}
 
-		public int	GetWidthOfAllTabs () {
-
-			int width = 0;
-
-			foreach (var tab in this.Tabs) {
-			//	width += tab.tab.GetComponentInChildren<Text> ().preferredWidth;
-				width += (int) tab.button.rect.width ;
-			}
-
-			return width;
-		}
-
-		public	RectTransform CreateTabButton ( string tabName ) {
+		public	virtual	RectTransform CreateTabButton ( string tabName ) {
 
 		//	var button = DataBinder.CreateButton (this.transform);
 
@@ -160,28 +170,39 @@ namespace uGameCore.Utilities.UI {
 				textComponent.verticalOverflow = VerticalWrapMode.Overflow ;	// fit to width
 			}
 
+			MySetDirty (button);
+			MySetDirty (this.transform);
+
 			return button.GetComponent<RectTransform> ();
 		}
 
-		public	void	SetPositionOfTabButton (RectTransform tabButton) {
-
-			var textComponent = tabButton.GetComponentInChildren<Text> ();
+		public	virtual	float	GetButtonWidthBasedOnTextComponent( Text textComponent ) {
 
 			float preferredWidth = textComponent.preferredWidth;
 			float preferredHeight = textComponent.preferredHeight;
 
-			int currentWidth = GetWidthOfAllTabs ();
-
 			// multiply button width by ratio between tabs height and preffered height => this will maintain aspect ratio of text component
-			float buttonWidth = preferredWidth * this.tabHeight / (float) preferredHeight ;
+			float buttonWidth = preferredWidth * this.tabButtonHeight / (float) preferredHeight ;
 
-			tabButton.anchorMin = NormalizeCoordinates (new Vector2 (currentWidth, GetHeight() - this.tabHeight ));
-			tabButton.anchorMax = NormalizeCoordinates (new Vector2 (currentWidth + buttonWidth, GetHeight() ));
-			tabButton.offsetMin = tabButton.offsetMax = Vector2.zero;
-
+			return buttonWidth;
 		}
 
-		public	RectTransform CreateTabPanel ( string tabName ) {
+		public	virtual	void	SetPositionOfTabButton (Tab tab, float leftCoordinate) {
+			
+			float buttonWidth = this.GetButtonWidthBasedOnTextComponent (tab.buttonTextComponent);
+
+			float right = leftCoordinate + buttonWidth ;
+			float top = this.GetHeight() - this.tabsPaddingTop;
+			float bottom = this.GetHeight() - this.tabHeight + this.tabsPaddingBottom;
+
+			tab.button.anchorMin = NormalizeCoordinates (new Vector2 (leftCoordinate, bottom ));
+			tab.button.anchorMax = NormalizeCoordinates (new Vector2 (right, top ));
+			tab.button.offsetMin = tab.button.offsetMax = Vector2.zero;
+
+			MySetDirty (tab.button);
+		}
+
+		public	virtual	RectTransform CreateTabPanel ( string tabName ) {
 
 		//	GameObject panelGameObject = new GameObject (tabName, typeof(RectTransform), typeof(Image));
 			GameObject panelGameObject = Instantiate( this.tabPanelPrefab );
@@ -190,19 +211,54 @@ namespace uGameCore.Utilities.UI {
 
 			panelGameObject.transform.SetParent (this.transform, false);
 
+			MySetDirty (panelGameObject);
+			MySetDirty (this.transform);
+
 			return panelGameObject.GetComponent<RectTransform> ();
 		}
 
-		public	void	SetPositionOfTabPanel (RectTransform rt) {
+		public	virtual	void	SetPositionOfTabPanel (Tab tab) {
 			
-			rt.anchorMin = Vector2.zero ;
-			rt.anchorMax = NormalizeCoordinates (new Vector2 ( GetWidth(), GetHeight () - this.tabHeight ));
-			rt.offsetMin = rt.offsetMax = Vector2.zero ;
+			int right = this.GetWidth ();
+			int top = this.GetHeight () - this.tabHeight;
+
+			tab.panel.anchorMin = Vector2.zero ;
+			tab.panel.anchorMax = NormalizeCoordinates (new Vector2 ( right, top ));
+			tab.panel.offsetMin = tab.panel.offsetMax = Vector2.zero ;
+
+			MySetDirty (tab.panel);
+		}
+
+
+		public	void	UpdatePositionsOfTabs() {
+
+			this.UpdatePositionsOfTabs (m_tabs.WhereAlive ().ToList ());
+
+		}
+
+		/// <summary>
+		/// Updates positions of specified tabs, as if they are the only tabs in TabView.
+		/// </summary>
+		public	virtual	void	UpdatePositionsOfTabs( List<Tab> tabs ) {
+
+			float left = this.tabsPaddingLeft;
+
+			foreach (var tab in tabs) {
+				
+				this.SetPositionOfTabButton (tab, left);
+
+				left += tab.button.rect.width + this.spaceBetweenTabButtons;
+
+				// update position of panel
+
+				this.SetPositionOfTabPanel (tab);
+
+			}
 
 		}
 
 
-		private	static	void	MyDestroy( UnityEngine.Object obj ) {
+		protected	static	void	MyDestroy( UnityEngine.Object obj ) {
 
 			if (Application.isEditor && !Application.isPlaying) {
 				// edit mode => we have to destroy objects using DestroyImmediate
@@ -213,19 +269,38 @@ namespace uGameCore.Utilities.UI {
 
 		}
 
+		protected	static	void	MySetDirty( UnityEngine.Object obj ) {
 
-		public	void	RemoveAllTabs () {
+			if (Application.isEditor && !Application.isPlaying) {
+				Utilities.MarkObjectAsDirty (obj);
+			}
 
-			foreach (var tab in this.Tabs) {
+		}
+
+
+		public	void	DeleteAllTabsAndPanels () {
+			
+			foreach (var tab in m_tabs.WhereAlive ()) {
 				
-				MyDestroy (tab.button.gameObject);
-				MyDestroy (tab.panel.gameObject);
+				DeleteTabAndHisPanel (tab);
 
 			}
 
-		//	m_tabs.Clear ();
+			m_tabs.Clear ();
 
 		//	m_activeTab = null;
+
+			MySetDirty (this.transform);
+			MySetDirty (this);	// list of tabs is modified
+
+		}
+
+		public	void	DeleteTabAndHisPanel( Tab tab ) {
+
+			MyDestroy (tab.button.gameObject);
+			MyDestroy (tab.panel.gameObject);
+
+			MySetDirty (this.transform);
 		}
 
 
@@ -234,7 +309,7 @@ namespace uGameCore.Utilities.UI {
 			if (newActiveTab == m_activeTab)
 				return;
 			
-			foreach( var tab in this.Tabs ) {
+			foreach( var tab in m_tabs.WhereAlive () ) {
 
 				if (tab == newActiveTab) {
 					// this is the new active tab
@@ -253,22 +328,41 @@ namespace uGameCore.Utilities.UI {
 
 		public	static	void	ActivateTab (Tab tab) {
 			tab.panel.gameObject.SetActive (true);
+			tab.buttonImageComponent.color = tab.tabView.activeTabColor;
+
+			MySetDirty (tab.panel.gameObject);
+			MySetDirty (tab.buttonImageComponent);
 		}
 
 		public	static	void	DeactivateTab (Tab tab) {
 			tab.panel.gameObject.SetActive (false);
+			tab.buttonImageComponent.color = tab.originalButtonColor;
+
+			MySetDirty (tab.panel.gameObject);
+			MySetDirty (tab.buttonImageComponent);
 		}
 
 
-		public	void	ApplyTabsFromInspector () {
+		public	void	ApplyTabsFromList () {
 
-			this.RemoveAllTabs ();
+			m_tabs.RemoveAllDeadObjects ();
 
-			foreach (var tabName in m_tabsForInspector) {
+			var allTabs = this.TabsInChildren;
 
-				this.AddTab (tabName);
+			// remove duplicates
+			m_tabs = m_tabs.Distinct().ToList();
 
+			// delete all tabs that are not in the new list
+			foreach (var tab in allTabs) {
+				if (!m_tabs.Contains (tab)) {
+					this.DeleteTabAndHisPanel (tab);
+				}
 			}
+
+			// update positions of new tabs
+			this.UpdatePositionsOfTabs();
+
+			MySetDirty (this);	// list of tabs is modified
 
 		}
 
@@ -278,7 +372,7 @@ namespace uGameCore.Utilities.UI {
 
 			// if there is no active tab, activate first one
 			if (null == m_activeTab) {
-				var tabs = this.Tabs;
+				var tabs = m_tabs;
 				if (tabs.Count > 0)
 					SwitchTab (tabs [0]);
 			}
