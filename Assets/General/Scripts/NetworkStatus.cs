@@ -29,11 +29,6 @@ namespace uGameCore {
 			m_networkClientStatusField = typeof(NetworkClient).GetField( "m_AsyncConnect", System.Reflection.BindingFlags.Instance | 
 				System.Reflection.BindingFlags.NonPublic );
 
-//			System.Type networkClientStatusType = System.Type.GetType ("", false);
-//			if (networkClientStatusType != null) {
-//				m_networkClientStatusField = networkClientStatusType.GetField( "", );
-//			}
-
 		}
 
 
@@ -116,7 +111,8 @@ namespace uGameCore {
 		}
 
 		/// <summary>
-		/// Is client connected ? This method should be corrected to return: is client active.
+		/// Is client connected ?
+		/// TODO: This method should be corrected to return: is client active.
 		/// </summary>
 		public	static	bool	IsClient() {
 			return NetworkStatus.IsClientConnected();

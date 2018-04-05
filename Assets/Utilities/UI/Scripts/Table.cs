@@ -3,20 +3,12 @@ using UnityEngine;
 using System;
 using UnityEngine.UI;
 using uGameCore;
+using System.Linq;
 
 namespace uGameCore.Utilities.UI {
 	
 	public class Table : MonoBehaviour {
 
-
-		/// <summary>
-		/// Entry in a table.
-		/// </summary>
-		public class Entry {
-			public	GameObject	gameObject = null;
-			public	object	cachedValue = null;
-
-		}
 
 		public enum ColumnWidthType {
 			Percentage,
@@ -35,6 +27,16 @@ namespace uGameCore.Utilities.UI {
 			public	string	columnName = "";
 			/// <summary> Assign this function if you want to enable sorting for this column. </summary>
 			public	Func<TableRow, int, IComparable> compareValueSelector = null ;
+
+			public	float	GetWidth( Table table ) {
+				if (this.widthType == ColumnWidthType.Absolute) {
+					return this.absoluteWidth;
+				} else if (this.widthType == ColumnWidthType.Percentage) {
+					return table.rectTransform.rect.width * this.widthPercentage;
+				}
+				return 0f;
+			}
+
 		}
 
 
@@ -43,58 +45,66 @@ namespace uGameCore.Utilities.UI {
 		/// <summary>
 		/// Place where all table rows are put in.
 		/// </summary>
-		public	RectTransform	Content { get { return this.GetComponent<ScrollRect> ().content; } }
+		public	RectTransform	Container { get { return this.rectTransform; } }
 
-	//	private	List<TableRow>	m_rows = new List<TableRow>();
+		[SerializeField]	private	List<TableRow>	m_rows = new List<TableRow>();
+
+		[SerializeField]	TableRow	m_headerRow = null;
 
 		/// <summary>
-		/// To be refactored - use GetAllRows() instead.
+		/// Gets all rows in content's first-level children.
 		/// </summary>
-		public List<TableRow> GetRows { get {
-				var rows = new List<TableRow> (this.Content.transform.childCount);
-				foreach (Transform child in this.Content.transform) {
-					var row = child.GetComponent<TableRow> ();
-					if (row != null)
-						rows.Add (row);
-				}
-				return rows;
+		public List<TableRow> GetRowsInChildren () {
+			var rows = new List<TableRow> (this.Container.transform.childCount);
+			foreach (Transform child in this.Container.transform) {
+				var row = child.GetComponent<TableRow> ();
+				if (row != null)
+					rows.Add (row);
 			}
+			return rows;
 		}
 
 		public	List<TableRow>	GetAllRows() {
-			return this.GetRows;
+			return m_rows;
 		}
 
 		public	List<Column>	columns = new List<Column> (0);
 
 		public	GameObject	tableEntryPrefab = null;
 
-		public	GameObject	horizontalLayoutGroupPrefab = null;
+	//	public	GameObject	horizontalLayoutGroupPrefab = null;
+		public	GameObject	tableRowPrefab = null;
 
 		public	GameObject	columnHeaderEntryPrefab = null;
 
 		public	int rowHeight = 30;
 
 
-		/// <summary> Assign this delegate to create table entry yourself. Arguments are prefab, parent, column index. </summary>
-		public	Func<GameObject, Transform, int, Entry>	function_createEntry ;
-		public	Action<TableRow, int>	function_updateEntry ;
-		public	Func<TableRow, int, string> function_getEntryText ;
-	//	public	Func<List<Column>>	function_getColumns = () => new List<Column> (0);
-
-		public	event	Action<Entry>	onEntryCreated = delegate {};
+		public	event	Action<TableEntry>	onEntryCreated = delegate {};
 		public	event	Action	onColumnHeadersCreated = delegate {};
 
 
 
 
-		private	Table()
-		{
+		public	float	GetTotalColumnsWidth() {
+			float width = 0f;
+			for (int i = 0; i < this.columns.Count; i++) {
+				width += this.columns [i].GetWidth (this);
+			}
+			return width;
+		}
 
-			function_createEntry = CreateEntry ;
-			function_updateEntry = UpdateTableEntry ;
-			function_getEntryText = GetEntryText ;
+		public	virtual	float	GetRowTopCoordinate( TableRow row, int rowIndex ) {
 
+			if (row.IsHeaderRow)
+				return 0f;
+
+			if (m_headerRow) {
+				// leave some space for headers
+				return this.rowHeight * (rowIndex + 1);
+			}
+
+			return this.rowHeight * rowIndex;
 		}
 
 
@@ -103,10 +113,12 @@ namespace uGameCore.Utilities.UI {
 		/// </summary>
 		public	void	UpdateTable () {
 
-			foreach (var row in this.GetRows) {
+			for (int i = 0; i < m_rows.Count; i++) {
+				this.UpdateRow (m_rows [i], i);
+			}
 
-				this.UpdateRow (row);
-
+			if (m_headerRow) {
+				this.UpdateRow (m_headerRow, 0);
 			}
 
 		}
@@ -114,10 +126,26 @@ namespace uGameCore.Utilities.UI {
 		/// <summary>
 		/// Updates all entries in a row.
 		/// </summary>
-		public	void	UpdateRow (TableRow row) {
+		public	void	UpdateRow (TableRow row, int rowIndex) {
 
-			for (int i = 0; i < row.entries.Count; i++) {
-				function_updateEntry (row, i);
+			// create entries if they are not created
+			int numEntriesToCreate = this.columns.Count - row.Entries.Count ;
+			for (int i = 0; i < numEntriesToCreate; i++) {
+				this.CreateEntry( row );
+			}
+
+			// set dimensions of row
+			float top = this.GetRowTopCoordinate( row, rowIndex );
+			float bottom = top - this.rowHeight;
+			row.GetRectTransform ().SetRectAndAdjustAnchors (new Rect (0, bottom, this.GetTotalColumnsWidth (),
+				top - bottom));
+			MySetDirty (row.GetRectTransform ());
+
+			// update entries
+			float leftCoordinate = 0f;
+			for (int i = 0; i < row.Entries.Count; i++) {
+				UpdateTableEntry (row, rowIndex, i, leftCoordinate);
+				leftCoordinate += this.columns [i].GetWidth (this);
 			}
 
 		}
@@ -143,14 +171,22 @@ namespace uGameCore.Utilities.UI {
 
 
 		/// <summary>
-		/// Default function for creating entry. It creates game object out of prefab.
+		/// Creates entry out of prefab.
 		/// </summary>
-		public	Entry	CreateEntry ( GameObject prefab, Transform parent, int columnIndex ) {
+		public	virtual	TableEntry	CreateEntry ( TableRow row ) {
 			
-			var go = prefab.InstantiateAsUIElement (parent);
+			var go = this.tableEntryPrefab.InstantiateAsUIElement (row.transform);
 
-			var entry = new Entry ();
-			entry.gameObject = go;
+			var entry = go.AddComponentIfDoesntExist<TableEntry> ();
+			entry.tableRow = row;
+
+			// add it to list of entries
+			row.Entries.Add (entry);
+
+			MySetDirty (row.transform);
+			MySetDirty (go);
+			MySetDirty (entry);
+			MySetDirty (row);
 
 			return entry;
 		}
@@ -162,26 +198,44 @@ namespace uGameCore.Utilities.UI {
 		}
 
 		/// <summary>
-		/// Default function for updating entry. It updates text of attached Text component.
+		/// Updates position, size and name of table entry.
 		/// </summary>
-		public	void	UpdateTableEntry ( TableRow row, int columnIndex ) {
-			
-			var entry = row.entries[columnIndex];
+		public	virtual	void	UpdateTableEntry ( TableRow row, int rowIndex, int columnIndex, float leftCoordinate ) {
 
-			var textComponent = entry.gameObject.GetComponentInChildren<Text> ();
+			var entry = row.Entries [columnIndex];
+			var column = this.columns [columnIndex];
 
-			if (textComponent != null) {
-				textComponent.text = function_getEntryText (row, columnIndex);
+			// set it's position and dimensions
+			float entryWidth = column.GetWidth (this);
+			float top = this.GetRowTopCoordinate (row, rowIndex);
+			float bottom = top - this.rowHeight ;
+			entry.GetRectTransform().SetRectAndAdjustAnchors( new Rect(leftCoordinate, bottom, entryWidth, this.rowHeight) );
+
+			MySetDirty (entry.GetRectTransform ());
+
+			// set name
+			if (entry.gameObject.name != column.columnName) {
+				entry.gameObject.name = column.columnName;
+				MySetDirty (entry.gameObject);
+			}
+
+			if (row.IsHeaderRow) {
+				// set entry's text
+				var textComponent = entry.textComponent;
+				if (textComponent) {
+					textComponent.text = column.columnName;
+					MySetDirty (textComponent);
+				}
 			}
 
 		}
 
 		/// <summary>
-		/// Default function for getting entry text. It retreives text from attached Text component.
+		/// Retreives text from attached Text component.
 		/// </summary>
 		public	string	GetEntryText ( TableRow row, int columnIndex ) {
 
-			var textComponent = row.entries [columnIndex].gameObject.GetComponentInChildren<Text> ();
+			var textComponent = row.entries [columnIndex].textComponent;
 
 			if (textComponent != null)
 				return textComponent.text;
@@ -189,27 +243,30 @@ namespace uGameCore.Utilities.UI {
 			return "";
 		}
 
+		public	TableEntry	GetEntry( int rowIndex, int columnIndex ) {
+
+			return this.GetAllRows () [rowIndex].Entries [columnIndex];
+
+		}
+
 
 		/// <summary>
 		/// Adds new row to the table.
 		/// </summary>
-		public	TableRow		AddRow () {
+		public	TableRow	AddRow () {
 			
-			// create horizontal group
-			var go = this.horizontalLayoutGroupPrefab.InstantiateAsUIElement (this.Content);
+			TableRow row = this.CreateRow ();
 
-			// add table row script if it doesn't exist
-			var row = go.AddComponentIfDoesntExist<TableRow>();
+			m_rows.Add (row);
 
-			this.CreateRow (row.entries, this.tableEntryPrefab, row.transform, row.GetComponent<RectTransform> ());
-
+			MySetDirty (this);
 
 			return row;
 		}
 
 		public	void	RemoveRow (int rowIndex) {
 
-			var rows = this.GetRows;
+			var rows = this.GetAllRows ();
 
 			var row = rows [rowIndex];
 
@@ -221,10 +278,10 @@ namespace uGameCore.Utilities.UI {
 
 		private	void	DestroyRow (TableRow row) {
 
-			// destroy all entries and horizontal group
+			// destroy row's game object - it will also destroy all it's entries
 			MyDestroy( row.gameObject );
 
-			row.entries.Clear ();
+			MySetDirty (this.Container.transform);
 
 		}
 
@@ -233,22 +290,26 @@ namespace uGameCore.Utilities.UI {
 		/// </summary>
 		public	void	Clear () {
 
-			foreach (var row in this.GetRows) {
+			foreach (var row in m_rows.WhereAlive ()) {
 				DestroyRow (row);
 			}
 
-		//	m_rows.Clear ();
+			m_rows.Clear ();
 
+			MySetDirty (this);
 		}
 
 		public	void	EnsureNumberOfRows (int numberOfRows)
 		{
+			m_rows.RemoveAllDeadObjects ();
 
-			int numRowsToAdd = numberOfRows - this.GetRows.Count;
+			int numRowsToAdd = numberOfRows - this.GetAllRows ().Count;
 
 			for (int i = 0; i < numRowsToAdd; i++) {
 				this.AddRow ();
 			}
+
+			MySetDirty (this);
 
 		}
 
@@ -257,7 +318,9 @@ namespace uGameCore.Utilities.UI {
 		/// </summary>
 		public	void	SetNumberOfRows (int numberOfRows)
 		{
-			var rows = this.GetRows;
+			m_rows.RemoveAllDeadObjects ();
+
+			var rows = m_rows;
 
 			int numToDelete = rows.Count - numberOfRows ;
 			int numToAdd = - numToDelete ;
@@ -270,137 +333,111 @@ namespace uGameCore.Utilities.UI {
 				this.AddRow ();
 			}
 
+			MySetDirty (this);
 		}
 
 
 		/// <summary>
-		/// Creates one row in a table. It creates entries for each column, sets their positions and dimensions, and does some more stuff.
+		/// Creates one row in a table. It creates entries for each column.
 		/// </summary>
-		private	void	CreateRow ( List<Entry> rowEntriesList, GameObject entryPrefab, Transform parent, RectTransform horizontalGroup ) {
+		protected	virtual	TableRow	CreateRow () {
 
-			float totalColumnWidth = 0;
+			GameObject rowGameObject = this.tableRowPrefab.InstantiateAsUIElement (this.Container.transform);
+			TableRow row = rowGameObject.AddComponentIfDoesntExist<TableRow> ();
+			row.table = this;
 
+
+			// create entries
 			for (int i = 0; i < this.columns.Count; i++) {
 				
 				var column = this.columns [i];
 
-				var entry = function_createEntry (entryPrefab, parent, i);
+				TableEntry entry = this.CreateEntry (row);
 
 				var entryGameObject = entry.gameObject;
 
 				entryGameObject.name = column.columnName;
 
 				// add layout element if it doesn't exist
-				if (null == entryGameObject.GetComponentInChildren<ILayoutElement> ())
-					entryGameObject.AddComponent<LayoutElement> ();
+			//	if (null == entryGameObject.GetComponentInChildren<ILayoutElement> ())
+			//		entryGameObject.AddComponent<LayoutElement> ();
+				
 
-				// set width and height
-				if (column.widthType == ColumnWidthType.Absolute) {
+				MySetDirty (entryGameObject);
+				MySetDirty (entryGameObject.GetRectTransform ());
 
-					entryGameObject.GetComponent<RectTransform>().sizeDelta = new Vector2( column.absoluteWidth, this.rowHeight ) ;
-
-					totalColumnWidth += column.absoluteWidth ;
-
-				} else if (column.widthType == ColumnWidthType.Percentage) {
-
-					float width = this.rectTransform.rect.width * column.widthPercentage;
-
-					entryGameObject.GetComponent<RectTransform>().sizeDelta = new Vector2( width, this.rowHeight ) ;
-
-					totalColumnWidth += width;
-				}
-
-				// add it to list of entries
-				rowEntriesList.Add (entry);
 
 				// invoke event
 				onEntryCreated (entry);
 			}
 
-			// set size of horizontal group game object
-			horizontalGroup.sizeDelta = new Vector2( totalColumnWidth, this.rowHeight );
+
+			MySetDirty (this.Container.transform);
+			MySetDirty (rowGameObject);
+			MySetDirty (row);
+			MySetDirty (row.GetRectTransform ());
 
 
+			return row;
 		}
 
 
-		public	void	CreateHeaders () {
-
-			var headersRow = this.GetHeadersRow ();
-
-			if (null == headersRow) {
+		/// <summary>
+		/// Creates header row if it doesn't exist.
+		/// </summary>
+		public	virtual	void	CreateHeader () {
+			
+			if (null == m_headerRow) {
 				// headers row doesn't exist
-				// create it as a game object with horizontal layout
+				// create it
 
-				var headersContainerGameObject = this.horizontalLayoutGroupPrefab.InstantiateAsUIElement (this.Content);
-				headersContainerGameObject.name = "Table headers";
+				m_headerRow = this.CreateRow ();
+				m_headerRow.isHeaderRow = true;
 
-				headersRow = headersContainerGameObject.AddComponentIfDoesntExist<TableHeadersRow> ();
+				m_headerRow.gameObject.name = "Table headers";
 
-				// add content size fitter
-			//	headersContainerGameObject.AddComponentIfDoesntExist<ContentSizeFitter> ();
+				MySetDirty (m_headerRow);
+				MySetDirty (m_headerRow.gameObject);
 
-			} else {
-				// headers row is already created
-				// destroy it's entries
-
-				foreach (var entry in headersRow.entries) {
-					MyDestroy (entry.gameObject);
-				}
-				headersRow.entries.Clear ();
+				onColumnHeadersCreated ();
 			}
-
-			// create entries
-
-			this.CreateRow (headersRow.entries, this.columnHeaderEntryPrefab, headersRow.transform, headersRow.GetComponent<RectTransform>() );
-
-			// set entries' text
-			for (int i = 0; i < headersRow.entries.Count; i++) {
-				var textComponent = headersRow.entries [i].gameObject.GetComponentInChildren<Text> ();
-				if (textComponent)
-					textComponent.text = this.columns [i].columnName;
-			}
-
-
-
-			onColumnHeadersCreated ();
 
 		}
 
 		/// <summary>
-		/// Gets the row which represents table headers.
+		/// Gets the row which represents table header.
 		/// </summary>
-		public	TableHeadersRow	GetHeadersRow () {
+		public	TableRow	GetHeaderRow () {
 
-			foreach (Transform child in this.Content.transform) {
+			return m_headerRow;
 
-				var headersRow = child.GetComponent<TableHeadersRow> ();
-				if (headersRow != null) {
-					// found headers row
-					return headersRow;
-				}
-			}
-
-			return null;
 		}
 
 		public	void	DestroyHeaders () {
-
-			var headersRow = GetHeadersRow ();
-
-			if (headersRow != null) {
-				MyDestroy (headersRow.gameObject);
+			
+			if (m_headerRow != null) {
+				MyDestroy (m_headerRow.gameObject);
+				MySetDirty (this.Container.transform);
 			}
 
 		}
 
 
-		private	static	void	MyDestroy (UnityEngine.Object obj) {
+		protected	static	void	MyDestroy( UnityEngine.Object obj ) {
 
 			if (Application.isEditor && !Application.isPlaying) {
+				// edit mode => we have to destroy objects using DestroyImmediate
 				DestroyImmediate (obj, false);
 			} else {
 				Destroy (obj);
+			}
+
+		}
+
+		protected	static	void	MySetDirty( UnityEngine.Object obj ) {
+
+			if (Application.isEditor && !Application.isPlaying) {
+				Utilities.MarkObjectAsDirty (obj);
 			}
 
 		}
@@ -425,8 +462,8 @@ namespace uGameCore.Utilities.UI {
 		{
 
 			// create headers if they are not created
-			if (null == this.GetHeadersRow ()) {
-				this.CreateHeaders ();
+			if (null == this.GetHeaderRow ()) {
+				this.CreateHeader ();
 				this.MarkForRebuild ();
 			}
 
