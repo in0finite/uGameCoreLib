@@ -37,6 +37,10 @@ namespace uGameCore.Utilities.UI {
 				return 0f;
 			}
 
+			public Column( Column other ) {
+				return this.MemberwiseClone ();
+			}
+
 		}
 
 
@@ -68,6 +72,8 @@ namespace uGameCore.Utilities.UI {
 			return m_rows;
 		}
 
+		public	int	RowsCount { get { return m_rows.Count; } }
+
 		public	List<Column>	columns = new List<Column> (0);
 
 		public	GameObject	tableEntryPrefab = null;
@@ -85,6 +91,18 @@ namespace uGameCore.Utilities.UI {
 
 
 
+
+		public	IEnumerable<TableEntry>	GetAllEntriesInColumn( string columnName ) {
+
+			int columnIndex = this.columns.FindIndex (c => c.columnName == columnName);
+			if (columnIndex < 0)
+				yield break;
+
+			foreach (var row in m_rows.WhereAlive()) {
+				yield return row.Entries [columnIndex];
+			}
+
+		}
 
 		public	float	GetTotalColumnsWidth() {
 			float width = 0f;
@@ -128,11 +146,17 @@ namespace uGameCore.Utilities.UI {
 		/// </summary>
 		public	void	UpdateRow (TableRow row, int rowIndex) {
 
+			row.Entries.RemoveAllDeadObjects ();
+			MySetDirty (row);
+
 			// create entries if they are not created
 			int numEntriesToCreate = this.columns.Count - row.Entries.Count ;
 			for (int i = 0; i < numEntriesToCreate; i++) {
 				this.CreateEntry( row );
 			}
+
+			// TODO: delete extra entries, or better yet, rearrange columns if needed
+
 
 			// set dimensions of row
 			float top = this.GetRowTopCoordinate( row, rowIndex );
@@ -147,6 +171,24 @@ namespace uGameCore.Utilities.UI {
 				UpdateTableEntry (row, rowIndex, i, leftCoordinate);
 				leftCoordinate += this.columns [i].GetWidth (this);
 			}
+
+		}
+
+		public	void	UpdateRow (TableRow row) {
+
+			if (null == row)
+				return;
+
+			if (m_headerRow == row) {
+				this.UpdateRow (row, 0);
+				return;
+			}
+
+			int index = m_rows.IndexOf (row);
+			if (index < 0)
+				return;
+
+			this.UpdateRow (row, index);
 
 		}
 
@@ -213,7 +255,7 @@ namespace uGameCore.Utilities.UI {
 
 			MySetDirty (entry.GetRectTransform ());
 
-			// set name
+			// set game object's name
 			if (entry.gameObject.name != column.columnName) {
 				entry.gameObject.name = column.columnName;
 				MySetDirty (entry.gameObject);
@@ -247,6 +289,52 @@ namespace uGameCore.Utilities.UI {
 
 			return this.GetAllRows () [rowIndex].Entries [columnIndex];
 
+		}
+
+
+//		public	void	SetColumns( List<Column> newColumns ) {
+//
+//			if (newColumns == this.columns)
+//				return;
+//
+//			foreach (var newColumn in newColumns) {
+//
+//				// find this column by name
+//				int columnIndex = this.columns.FindIndex( c => c.columnName == newColumn.columnName );
+//
+//				if (columnIndex < 0) {
+//					// column with this name doesn't exist
+//					// insert it
+//
+//				} else {
+//					// column with this name exists
+//					// replace it to match index
+//
+//				}
+//
+//			}
+//
+//		}
+
+		/// <summary>
+		/// Sets width of each column based on it's text. It does not update table.
+		/// </summary>
+		public	void	SetColumnWidthsBasedOnText() {
+
+			if (null == m_headerRow)
+				return;
+
+			for (int i = 0; i < this.columns.Count; i++) {
+				var textComponent = m_headerRow.Entries [i].textComponent;
+
+				// multiply column width by ratio between row height and preffered height => this will maintain aspect ratio of text component
+				float columnWidth = textComponent.preferredWidth * this.rowHeight / (float) textComponent.preferredHeight ;
+
+				this.columns [i].widthType = ColumnWidthType.Absolute;
+				this.columns [i].absoluteWidth = columnWidth;
+			}
+
+			MySetDirty (this);
 		}
 
 
@@ -413,11 +501,12 @@ namespace uGameCore.Utilities.UI {
 
 		}
 
-		public	void	DestroyHeaders () {
+		public	void	DestroyHeader () {
 			
 			if (m_headerRow != null) {
 				MyDestroy (m_headerRow.gameObject);
 				MySetDirty (this.Container.transform);
+				m_headerRow = null;
 			}
 
 		}
@@ -434,7 +523,7 @@ namespace uGameCore.Utilities.UI {
 
 		}
 
-		protected	static	void	MySetDirty( UnityEngine.Object obj ) {
+		protected	internal	static	void	MySetDirty( UnityEngine.Object obj ) {
 
 			if (Application.isEditor && !Application.isPlaying) {
 				Utilities.MarkObjectAsDirty (obj);

@@ -48,6 +48,7 @@ namespace uGameCore.Utilities.UI {
 
 
 		public	event Action<Tab>	onTabAdded = delegate {};
+		public	event Action	onSwitchedTab = delegate {};
 
 		public	GameObject	tabButtonPrefab = null;
 		public	GameObject	tabPanelPrefab = null;
@@ -323,6 +324,8 @@ namespace uGameCore.Utilities.UI {
 			}
 
 			m_activeTab = newActiveTab;
+
+			Utilities.InvokeEventExceptionSafe (this.onSwitchedTab);
 
 		}
 

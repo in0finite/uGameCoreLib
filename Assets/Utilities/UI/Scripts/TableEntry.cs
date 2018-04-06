@@ -10,6 +10,7 @@ namespace uGameCore.Utilities.UI {
 	{
 		
 		[HideInInspector]	[SerializeField]	internal	TableRow	tableRow = null;
+		public TableRow TableRow { get { return this.tableRow; } }
 
 	//	public	object	cachedValue = null;
 
@@ -20,6 +21,21 @@ namespace uGameCore.Utilities.UI {
 					return m_textComponent;
 				m_textComponent = this.GetComponentInChildren<Text> ();
 				return m_textComponent;
+			}
+		}
+
+		public	string	entryText {
+			get {
+				if (this.textComponent)
+					return this.textComponent.text;
+				else
+					return "";
+			}
+			set {
+				if (this.textComponent) {
+					this.textComponent.text = value;
+					Table.MySetDirty (this.textComponent);
+				}
 			}
 		}
 
