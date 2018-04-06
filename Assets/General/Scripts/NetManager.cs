@@ -8,6 +8,17 @@ namespace uGameCore {
 
 		public	static	int	defaultListenPortNumber { get { return 7777; } }
 
+		public	static	int	listenPortNumber { get { return NetworkServer.listenPort; } }
+
+		public	static	string	onlineScene {
+			get {
+				return NetworkManager.singleton.onlineScene;
+			}
+			set {
+				NetworkManager.singleton.onlineScene = value;
+			}
+		}
+
 
 
 		public	static	void	StartServer( int portNumber ) {
