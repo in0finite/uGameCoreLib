@@ -21,7 +21,18 @@ namespace uGameCore {
 
 		private	readonly	string	delayedStopMethodName = "DelayedStop";
 
+		public	static	LANScan2UI	singleton { get ; private set ; }
 
+		private	static	List<NetBroadcast.BroadcastData>	m_dataToAddToTable = new List<NetBroadcast.BroadcastData>();
+
+
+
+		void Awake ()
+		{
+			if (null == singleton)
+				singleton = this;
+
+		}
 
 		void Start ()
 		{
@@ -35,10 +46,10 @@ namespace uGameCore {
 
 		}
 
-		private void StopListeningLater() {
+		public	static	void	StopListeningLater() {
 			
-			this.CancelInvoke (this.delayedStopMethodName);
-			this.Invoke (this.delayedStopMethodName, this.refreshTime);
+			singleton.CancelInvoke (singleton.delayedStopMethodName);
+			singleton.Invoke (singleton.delayedStopMethodName, singleton.refreshTime);
 
 		}
 
@@ -55,12 +66,14 @@ namespace uGameCore {
 				// our tab was opened
 				if (!NetBroadcast.IsListening ()) {
 					// clear table
-					if (this.table)
+					if (this.table) {
 						this.table.Clear ();
+						this.table.UpdateTable ();
+					}
 					// start listening
 					NetBroadcast.StartListening ();
 					// stop after some time
-					this.StopListeningLater ();
+					StopListeningLater ();
 				}
 			}
 
@@ -68,13 +81,39 @@ namespace uGameCore {
 
 		void OnReceivedBroadcast( NetBroadcast.BroadcastData data ) {
 
-			if (null == this.table)
-				return;
+			m_dataToAddToTable.Add (data);
 
-			EnsureColumnsMatchBroadcastData( this.table, data );
+		}
+
+
+		void Update ()
+		{
+
+			if (null == this.table) {
+				m_dataToAddToTable.Clear ();
+				return;
+			}
+
+			if (this.table.gameObject.activeInHierarchy && this.table.gameObject.activeSelf) {
+				// only add data to table if it is active
+
+				foreach (var data in m_dataToAddToTable) {
+					HandleBroadcastData (this.table, data);
+				}
+
+				m_dataToAddToTable.Clear ();
+			}
+
+		}
+
+
+		public	static	void	HandleBroadcastData( Table table, NetBroadcast.BroadcastData data ) {
+
+
+			EnsureColumnsMatchBroadcastData( table, data );
 
 			// try to find this server in a table
-			TableRow rowWithServer = FindRowWithServer( this.table, data );
+			TableRow rowWithServer = FindRowWithServer( table, data );
 
 			if (rowWithServer) {
 				// this server already exists in table
@@ -86,12 +125,14 @@ namespace uGameCore {
 				// this server doesn't exist
 				// add it to table
 
-				rowWithServer = this.table.AddRow ();
+				rowWithServer = table.AddRow ();
 
-				this.table.UpdateRow (rowWithServer);
+				table.UpdateRow (rowWithServer);
 
 				PopulateTableRow (rowWithServer, data);
 			}
+
+			table.UpdateTable ();
 
 		}
 
@@ -136,9 +177,8 @@ namespace uGameCore {
 				table.columns = newColumns;
 				table.CreateHeader ();
 
-				// we need column widths - first, update header, and then obtain width from text component
-				table.UpdateRow( table.GetHeaderRow() );
-				table.SetColumnWidthsBasedOnText ();
+				// adjust column widths
+				AdjustColumnWidths( table );
 
 				// restore saved data
 				foreach (var rowData in allData) {
@@ -150,6 +190,41 @@ namespace uGameCore {
 				table.UpdateTable ();
 
 			}
+
+		}
+
+		public	static	void	AdjustColumnWidths( Table table ) {
+
+			if (null == table.GetHeaderRow ())
+				return;
+
+			// make sure table transform is updated
+			table.SetTableTransform ();
+
+			// make sure header row is updated
+			table.UpdateRow( table.GetHeaderRow() );
+
+			table.SetColumnWidthsBasedOnText ();
+
+			// stretch them to fit parent
+			table.ResizeColumnsToFitParent ();
+
+			// now, do some adjustments
+
+			var column = table.GetColumnByName( "IP" );
+			if (column != null)
+				column.absoluteWidth = Mathf.Max (130, column.absoluteWidth);
+
+			column = table.GetColumnByName( "Port" );
+			if (column != null)
+				column.absoluteWidth = Mathf.Min (60, column.absoluteWidth);
+
+			column = table.GetColumnByName( "Players" );
+			if (column != null)
+				column.absoluteWidth = Mathf.Min (60, column.absoluteWidth);
+
+			// now stretch them again
+			table.ResizeColumnsToFitParent ();
 
 		}
 
