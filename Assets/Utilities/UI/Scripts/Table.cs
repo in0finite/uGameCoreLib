@@ -7,7 +7,9 @@ using System.Linq;
 
 namespace uGameCore.Utilities.UI {
 	
-	public class Table : MonoBehaviour {
+	public class Table : MonoBehaviour, ILayoutElement {
+
+		// TODO: select rows, change color of selected rows, change color of header, sort rows, 
 
 
 		public enum ColumnWidthType {
@@ -37,8 +39,8 @@ namespace uGameCore.Utilities.UI {
 				return 0f;
 			}
 
-			public Column( Column other ) {
-				return this.MemberwiseClone ();
+			public	Column	Clone() {
+				return (Column) this.MemberwiseClone ();
 			}
 
 		}
@@ -51,9 +53,9 @@ namespace uGameCore.Utilities.UI {
 		/// </summary>
 		public	RectTransform	Container { get { return this.rectTransform; } }
 
-		[SerializeField]	private	List<TableRow>	m_rows = new List<TableRow>();
+		[HideInInspector]	[SerializeField]	private	List<TableRow>	m_rows = new List<TableRow>();
 
-		[SerializeField]	TableRow	m_headerRow = null;
+		[HideInInspector]	[SerializeField]	TableRow	m_headerRow = null;
 
 		/// <summary>
 		/// Gets all rows in content's first-level children.
@@ -78,12 +80,14 @@ namespace uGameCore.Utilities.UI {
 
 		public	GameObject	tableEntryPrefab = null;
 
-	//	public	GameObject	horizontalLayoutGroupPrefab = null;
 		public	GameObject	tableRowPrefab = null;
 
-		public	GameObject	columnHeaderEntryPrefab = null;
-
 		public	int rowHeight = 30;
+
+		public	bool	updateParentDimensions = false;
+
+	//	public	Color	headerRowColorDelta = new Color( 20, 20, 20, 0 ) / 256f;
+	//	public	Color	selectedRowColorDelta = new Color( 20, 20, 20, 0 ) / 256f;
 
 
 		public	event	Action<TableEntry>	onEntryCreated = delegate {};
@@ -91,6 +95,26 @@ namespace uGameCore.Utilities.UI {
 
 
 
+
+		private	Table()
+		{
+			// add some columns
+			for (int i = 0; i < 3; i++) {
+				Column column = new Column();
+				column.columnName = "Column " + i;
+				column.widthType = ColumnWidthType.Absolute;
+				column.absoluteWidth = 100;
+				this.columns.Add( column );
+			}
+
+		}
+
+
+		public	Column	GetColumnByName (string columnName) {
+
+			return this.columns.Find (c => c.columnName == columnName);
+
+		}
 
 		public	IEnumerable<TableEntry>	GetAllEntriesInColumn( string columnName ) {
 
@@ -112,24 +136,118 @@ namespace uGameCore.Utilities.UI {
 			return width;
 		}
 
-		public	virtual	float	GetRowTopCoordinate( TableRow row, int rowIndex ) {
+		public	float	CalculateTableHeight() {
 
-			if (row.IsHeaderRow)
-				return 0f;
+			float height = 0f;
 
-			if (m_headerRow) {
-				// leave some space for headers
-				return this.rowHeight * (rowIndex + 1);
+			if (m_headerRow)
+				height += this.rowHeight;
+			
+			height += m_rows.Count * this.rowHeight;
+
+			return height;
+		}
+
+
+		public void CalculateLayoutInputHorizontal () {  }
+
+		public void CalculateLayoutInputVertical () {  }
+
+		public float minWidth { get { return 0; } }
+
+		public float preferredWidth { get { return this.GetTotalColumnsWidth (); } }
+
+		public float flexibleWidth { get { return -1; } }
+
+		public float minHeight { get { return 0; } }
+
+		public float preferredHeight { get { return this.CalculateTableHeight (); } }
+
+		public float flexibleHeight { get { return -1; } }
+
+		public int layoutPriority { get { return 0; } }
+
+
+		public	virtual	void	SetRowTransform( TableRow row, int rowIndex ) {
+
+			float verticalOffset = 0f;
+
+			// vertical offset of the first row
+			float startingVerticalOffset = 0f; // -this.rowHeight / 2f;
+
+			if (row.IsHeaderRow) {
+				verticalOffset = startingVerticalOffset;
+			} else {
+				if (m_headerRow) {
+					// leave some space for headers
+					verticalOffset = startingVerticalOffset - this.rowHeight * (rowIndex + 1);
+				} else {
+					verticalOffset = startingVerticalOffset - this.rowHeight * rowIndex;
+				}
 			}
 
-			return this.rowHeight * rowIndex;
+
+			float width = this.GetTotalColumnsWidth ();
+
+			// set anchor to upper left corner
+			row.GetRectTransform ().anchorMin = new Vector2 (0f, 1f);
+			row.GetRectTransform ().anchorMax = new Vector2 (0f, 1f);
+
+			// set offset from upper left corner
+			row.GetRectTransform ().offsetMax = new Vector2 (width, verticalOffset);
+			row.GetRectTransform ().offsetMin = new Vector2 (0f, verticalOffset - this.rowHeight);
+
+			// set size
+			row.GetRectTransform().sizeDelta = new Vector2( width, this.rowHeight );
+
+			MySetDirty (row.GetRectTransform ());
+
+		}
+
+		public	virtual	void	SetTableTransform() {
+
+			// set size of table
+			// it's left and top position will remain the same, only width and height will be changed
+
+
+			float tableWidth = this.GetTotalColumnsWidth();
+			float tableHeight = this.CalculateTableHeight ();
+			Vector2 parentSize = this.Container.GetParentDimensions ();
+
+			this.Container.AnchorsToCorners();
+
+			float top = this.Container.anchorMax.y * parentSize.y;
+			float left = this.Container.anchorMin.x * parentSize.x;
+			this.Container.anchorMin = this.Container.NormalizePositionRelativeToParent( new Vector2 (left, top - tableHeight) );
+			this.Container.anchorMax = this.Container.NormalizePositionRelativeToParent( new Vector2 (left + tableWidth, top) );
+			this.Container.offsetMin = this.Container.offsetMax = Vector2.zero;
+		//	this.Container.SetRectAndAdjustAnchors (new Rect (left, top - tableHeight, tableWidth, tableHeight));
+
+		//	this.Container.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, tableWidth );
+		//	this.Container.SetSizeWithCurrentAnchors (RectTransform.Axis.Vertical, tableHeight );
+
+			MySetDirty (this.Container);
+
 		}
 
 
 		/// <summary>
-		/// Updates all rows.
+		/// Updates the table.
 		/// </summary>
 		public	void	UpdateTable () {
+
+			m_rows.RemoveAllDeadObjects ();
+
+			this.SetTableTransform ();
+
+			if (this.updateParentDimensions) {
+				if (this.transform.parent) {
+					var rt = this.transform.parent.GetRectTransform ();
+					rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, this.Container.rect.width);
+					rt.SetSizeWithCurrentAnchors (RectTransform.Axis.Vertical, this.Container.rect.height);
+					MySetDirty (rt);
+				}
+			}
 
 			for (int i = 0; i < m_rows.Count; i++) {
 				this.UpdateRow (m_rows [i], i);
@@ -139,6 +257,7 @@ namespace uGameCore.Utilities.UI {
 				this.UpdateRow (m_headerRow, 0);
 			}
 
+			MySetDirty (this);
 		}
 
 		/// <summary>
@@ -158,12 +277,8 @@ namespace uGameCore.Utilities.UI {
 			// TODO: delete extra entries, or better yet, rearrange columns if needed
 
 
-			// set dimensions of row
-			float top = this.GetRowTopCoordinate( row, rowIndex );
-			float bottom = top - this.rowHeight;
-			row.GetRectTransform ().SetRectAndAdjustAnchors (new Rect (0, bottom, this.GetTotalColumnsWidth (),
-				top - bottom));
-			MySetDirty (row.GetRectTransform ());
+			// set row transform
+			this.SetRowTransform( row, rowIndex );
 
 			// update entries
 			float leftCoordinate = 0f;
@@ -249,7 +364,8 @@ namespace uGameCore.Utilities.UI {
 
 			// set it's position and dimensions
 			float entryWidth = column.GetWidth (this);
-			float top = this.GetRowTopCoordinate (row, rowIndex);
+		//	float top = this.GetRowTopCoordinate (row, rowIndex);
+			float top = this.rowHeight;
 			float bottom = top - this.rowHeight ;
 			entry.GetRectTransform().SetRectAndAdjustAnchors( new Rect(leftCoordinate, bottom, entryWidth, this.rowHeight) );
 
@@ -327,11 +443,37 @@ namespace uGameCore.Utilities.UI {
 			for (int i = 0; i < this.columns.Count; i++) {
 				var textComponent = m_headerRow.Entries [i].textComponent;
 
-				// multiply column width by ratio between row height and preffered height => this will maintain aspect ratio of text component
-				float columnWidth = textComponent.preferredWidth * this.rowHeight / (float) textComponent.preferredHeight ;
+				float preferredWidth = textComponent.preferredWidth;
+				float preferredHeight = textComponent.preferredHeight;
 
-				this.columns [i].widthType = ColumnWidthType.Absolute;
-				this.columns [i].absoluteWidth = columnWidth;
+				if (preferredHeight > 0) {
+					
+					// multiply column width by ratio between row height and preffered height => this will maintain aspect ratio of text component
+					float columnWidth = preferredWidth * this.rowHeight / (float)preferredHeight;
+
+					this.columns [i].widthType = ColumnWidthType.Absolute;
+					this.columns [i].absoluteWidth = columnWidth;
+				}
+			}
+
+			MySetDirty (this);
+		}
+
+		public	void	ResizeColumnsToFitParent() {
+
+			float parentWidth = this.Container.GetParentDimensions ().x;
+			float totalColumnsWidth = this.GetTotalColumnsWidth ();
+
+			if (0 == totalColumnsWidth)
+				return;
+
+			float multiplier = parentWidth / totalColumnsWidth;
+
+			foreach (var column in this.columns) {
+				float currentWidth = column.GetWidth (this);
+
+				column.widthType = ColumnWidthType.Absolute;
+				column.absoluteWidth = currentWidth * multiplier;
 			}
 
 			MySetDirty (this);
@@ -482,10 +624,14 @@ namespace uGameCore.Utilities.UI {
 				m_headerRow = this.CreateRow ();
 				m_headerRow.isHeaderRow = true;
 
-				m_headerRow.gameObject.name = "Table headers";
+				m_headerRow.gameObject.name = "Table header";
+
+				// make it the first child
+				m_headerRow.transform.SetAsFirstSibling ();
 
 				MySetDirty (m_headerRow);
 				MySetDirty (m_headerRow.gameObject);
+				MySetDirty (m_headerRow.transform.parent);
 
 				onColumnHeadersCreated ();
 			}
@@ -532,14 +678,6 @@ namespace uGameCore.Utilities.UI {
 		}
 
 
-		public	void	MarkForRebuild () {
-
-			LayoutRebuilder.MarkLayoutForRebuild (this.transform as RectTransform);
-
-		}
-
-
-
 
 		void Awake ()
 		{
@@ -549,13 +687,7 @@ namespace uGameCore.Utilities.UI {
 
 		void Start ()
 		{
-
-			// create headers if they are not created
-			if (null == this.GetHeaderRow ()) {
-				this.CreateHeader ();
-				this.MarkForRebuild ();
-			}
-
+			
 		}
 
 
