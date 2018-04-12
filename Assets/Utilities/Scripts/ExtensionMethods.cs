@@ -10,6 +10,11 @@ namespace uGameCore {
 	public static	class ExtensionMethods {
 
 
+		private	static	Vector3[]	m_fourCornersArray = new Vector3[4];
+
+
+
+
 		// TODO: T should inherit UnityEngine.Object
 		public	static	IEnumerable<T>	WhereNotNull<T>( this IEnumerable<T> enumerable ) where T : class {
 
@@ -407,19 +412,52 @@ namespace uGameCore {
 			
 		}
 
+		public	static	Rect	GetRect( this RectTransform rectTransform ) {
+
+			Vector3[] localCorners = m_fourCornersArray;
+			rectTransform.GetLocalCorners (localCorners);
+
+			float xMin = float.PositiveInfinity, yMin = float.PositiveInfinity;
+			float xMax = float.NegativeInfinity, yMax = float.NegativeInfinity;
+
+			for (int i = 0; i < localCorners.Length; i++) {
+				Vector3 corner = localCorners [i];
+
+				if (corner.x < xMin)
+					xMin = corner.x;
+				else if (corner.x > xMax)
+					xMax = corner.x;
+
+				if (corner.y < yMin)
+					yMin = corner.y;
+				else if (corner.y > yMax)
+					yMax = corner.y;
+			}
+
+			return new Rect (xMin, yMin, xMax - xMin, yMax - yMin);
+		}
+
 		public	static	Vector2	GetParentDimensions( this RectTransform rectTransform ) {
 
 			if (null == rectTransform.parent)
 				return new Vector2 (Screen.width, Screen.height);
 
-			return ((RectTransform)rectTransform.parent).rect.size;
+		//	return ((RectTransform)rectTransform.parent).rect.size;
+			return rectTransform.parent.GetRectTransform().GetRect().size;
 		}
 
 		public	static	Vector2	NormalizePositionRelativeToParent( this RectTransform rectTransform, Vector2 pos ) {
 
 			Vector2 parentSize = rectTransform.GetParentDimensions ();
 
-			return new Vector2 (pos.x / parentSize.x, pos.y / parentSize.y);
+			Vector2 normalizedPos = Vector2.zero;
+
+			if (parentSize.x != 0)
+				normalizedPos.x = pos.x / parentSize.x;
+			if (parentSize.y != 0)
+				normalizedPos.y = pos.y / parentSize.y;
+
+			return normalizedPos;
 		}
 
 		public	static	void	SetNormalColor( this UnityEngine.UI.Button button, Color normalColor ) {

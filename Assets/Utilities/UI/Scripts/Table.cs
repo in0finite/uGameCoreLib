@@ -214,6 +214,7 @@ namespace uGameCore.Utilities.UI {
 
 		}
 
+		/*
 		public	virtual	void	SetTableTransform() {
 
 			// set size of table
@@ -222,21 +223,50 @@ namespace uGameCore.Utilities.UI {
 
 			float tableWidth = this.GetTotalColumnsWidth();
 			float tableHeight = this.CalculateTableHeight ();
-			Vector2 parentSize = this.Container.GetParentDimensions ();
+		//	Vector2 tableSizeNormalized = this.Container.NormalizePositionRelativeToParent (new Vector2 (tableWidth, tableHeight));
+		//	Vector2 parentSize = this.Container.GetParentDimensions ();
 
-			this.Container.AnchorsToCorners();
+		//	Rect rect = this.Container.GetRect();
 
-			float top = this.Container.anchorMax.y * parentSize.y;
-			float left = this.Container.anchorMin.x * parentSize.x;
-			this.Container.anchorMin = this.Container.NormalizePositionRelativeToParent( new Vector2 (left, top - tableHeight) );
-			this.Container.anchorMax = this.Container.NormalizePositionRelativeToParent( new Vector2 (left + tableWidth, top) );
-			this.Container.offsetMin = this.Container.offsetMax = Vector2.zero;
+		//	float top = parentSize.y - rect.yMin;
+		//	float left = rect.xMin;
+		//	float offsetToTop = parentSize.y - top;
+		//	Vector2 upperLeft = new Vector2 (left, top);
+		//	Vector2 upperLeftNormalized = this.Container.NormalizePositionRelativeToParent (upperLeft);
+
+		//	this.Container.anchorMin = this.Container.NormalizePositionRelativeToParent( new Vector2 (left, top - tableHeight) );
+		//	this.Container.anchorMax = this.Container.NormalizePositionRelativeToParent( new Vector2 (left + tableWidth, top) );
+		//	this.Container.offsetMin = this.Container.offsetMax = Vector2.zero;
+
+			// set anchors to upper left, and adjust offsets
+			this.Container.anchorMin = new Vector2 (0f, 1f);
+			this.Container.anchorMax = new Vector2 (0f, 1f);
+		//	this.Container.offsetMin = new Vector2 (upperLeft.x, - offsetToTop - tableHeight );
+		//	this.Container.offsetMax = new Vector2 (upperLeft.x + tableWidth, - offsetToTop );
+		//	this.Container.sizeDelta = new Vector2 (tableWidth, tableHeight);
+
 		//	this.Container.SetRectAndAdjustAnchors (new Rect (left, top - tableHeight, tableWidth, tableHeight));
 
-		//	this.Container.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, tableWidth );
-		//	this.Container.SetSizeWithCurrentAnchors (RectTransform.Axis.Vertical, tableHeight );
+			this.Container.SetSizeWithCurrentAnchors (RectTransform.Axis.Horizontal, tableWidth);
+			this.Container.SetSizeWithCurrentAnchors (RectTransform.Axis.Vertical, tableHeight);
 
 			MySetDirty (this.Container);
+
+		//	Debug.LogFormat ("tableWidth {0} tableHeight {1} parentSize {2} top {3} left {4}", tableWidth, tableHeight, parentSize, top, left);
+
+		}
+		*/
+
+		public	virtual	void	UpdateParentDimensions() {
+
+			if (this.transform.parent) {
+				var rt = this.transform.parent.GetRectTransform ();
+				float width = this.GetTotalColumnsWidth ();
+				float height = this.CalculateTableHeight ();
+				rt.SetSizeWithCurrentAnchors (RectTransform.Axis.Horizontal, width);
+				rt.SetSizeWithCurrentAnchors (RectTransform.Axis.Vertical, height);
+				MySetDirty (rt);
+			}
 
 		}
 
@@ -248,16 +278,12 @@ namespace uGameCore.Utilities.UI {
 
 			m_rows.RemoveAllDeadObjects ();
 
-			this.SetTableTransform ();
-
+			// first update parent dimensions, and after that table transform
 			if (this.updateParentDimensions) {
-				if (this.transform.parent) {
-					var rt = this.transform.parent.GetRectTransform ();
-					rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, this.Container.rect.width);
-					rt.SetSizeWithCurrentAnchors (RectTransform.Axis.Vertical, this.Container.rect.height);
-					MySetDirty (rt);
-				}
+				this.UpdateParentDimensions ();
 			}
+
+		//	this.SetTableTransform ();
 
 			for (int i = 0; i < m_rows.Count; i++) {
 				this.UpdateRow (m_rows [i], i);
