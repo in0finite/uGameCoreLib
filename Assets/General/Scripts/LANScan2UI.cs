@@ -60,6 +60,23 @@ namespace uGameCore {
 
 		}
 
+		/// <summary>
+		/// Updates the table in the next frame to fix the bug in unity UI, which doubles the width of table parent.
+		/// </summary>
+		public	static	void	UpdateTableLater( Table table ) {
+
+			singleton.StartCoroutine( UpdateTableCoroutine(table) );
+
+		}
+
+		private	static	System.Collections.IEnumerator	UpdateTableCoroutine(Table table) {
+
+			yield return null;
+
+			if (table)
+				table.UpdateTable ();
+		}
+
 		void OnTabSwitched() {
 
 			if (this.tabView.ActiveTab && this.tabView.ActiveTab.tabButtonText == this.tabName) {
@@ -69,6 +86,7 @@ namespace uGameCore {
 					if (this.table) {
 						this.table.Clear ();
 						this.table.UpdateTable ();
+						UpdateTableLater (this.table);
 					}
 					// start listening
 					NetBroadcast.StartListening ();
@@ -199,7 +217,7 @@ namespace uGameCore {
 				return;
 
 			// make sure table transform is updated
-			table.SetTableTransform ();
+		//	table.SetTableTransform ();
 
 			// make sure header row is updated
 			table.UpdateRow( table.GetHeaderRow() );
