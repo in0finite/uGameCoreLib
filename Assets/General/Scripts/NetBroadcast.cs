@@ -105,7 +105,7 @@ namespace uGameCore {
 
 				string ip = ips [Random.Range (0, ips.Length - 1)];
 				var dict = new Dictionary<string, string> () { { "Port", Random.Range (1, 65535).ToString () }, 
-					{ "Players", Random.Range (0, 20).ToString () }, { "map", "gwefrds" }
+					{ "Players", Random.Range (0, 20).ToString () }, { "Map", "gwefrds" }
 				};
 
 				OnReceivedBroadcastData( new BroadcastData( ip, dict ) );

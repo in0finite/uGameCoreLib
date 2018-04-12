@@ -57,6 +57,16 @@ namespace uGameCore.Utilities.UI {
 
 		[HideInInspector]	[SerializeField]	TableRow	m_headerRow = null;
 
+		private	TableRow	m_selectedRow = null;
+		public TableRow SelectedRow {
+			get {
+				return m_selectedRow;
+			}
+			set {
+				this.SelectRow (value, false);
+			}
+		}
+
 		/// <summary>
 		/// Gets all rows in content's first-level children.
 		/// </summary>
@@ -86,8 +96,8 @@ namespace uGameCore.Utilities.UI {
 
 		public	bool	updateParentDimensions = false;
 
-	//	public	Color	headerRowColorDelta = new Color( 20, 20, 20, 0 ) / 256f;
-	//	public	Color	selectedRowColorDelta = new Color( 20, 20, 20, 0 ) / 256f;
+		public	Vector4	headerRowColorDelta = new Vector4 (-1, -1, -1, 1) * 0.12f;
+		public	Vector4	selectedRowColorDelta = new Vector4 (-0.4f, -0.4f, -0.2f, 0.5f);
 
 
 		public	event	Action<TableEntry>	onEntryCreated = delegate {};
@@ -279,6 +289,25 @@ namespace uGameCore.Utilities.UI {
 
 			// set row transform
 			this.SetRowTransform( row, rowIndex );
+
+			// set row color
+			if (row.ImageComponent) {
+				Color color = row.OriginalImageColor;
+
+				if (m_selectedRow == row) {
+					// this row is selected
+					color += (Color) this.selectedRowColorDelta;
+				} else if (m_headerRow == row) {
+					// this row is header row
+					color += (Color) this.headerRowColorDelta;
+				}
+
+				// color should be normalized (all values should be between 0 and 1)
+				color.NormalizeIfNeeded ();
+
+				if (row.ImageComponent.color != color)
+					row.ImageComponent.color = color;
+			}
 
 			// update entries
 			float leftCoordinate = 0f;
@@ -515,6 +544,31 @@ namespace uGameCore.Utilities.UI {
 
 		}
 
+		public	void	SelectRow (TableRow newSelectedRow, bool updateAffectedRows) {
+
+			if (newSelectedRow != null && newSelectedRow.Table != this)	// row doesn't belong to this table
+				return;
+
+			if (newSelectedRow != null && newSelectedRow.IsHeaderRow)	// header row can not be selected
+				return;
+
+			if (newSelectedRow == m_selectedRow)
+				return;
+
+			var oldSelectedRow = m_selectedRow;
+
+			m_selectedRow = newSelectedRow;
+
+			if (updateAffectedRows) {
+				
+				if (oldSelectedRow)
+					this.UpdateRow (oldSelectedRow);
+				if (newSelectedRow)
+					this.UpdateRow (newSelectedRow);
+			}
+
+		}
+
 		/// <summary>
 		/// Removes all rows from table.
 		/// </summary>
@@ -573,8 +627,14 @@ namespace uGameCore.Utilities.UI {
 		protected	virtual	TableRow	CreateRow () {
 
 			GameObject rowGameObject = this.tableRowPrefab.InstantiateAsUIElement (this.Container.transform);
+
 			TableRow row = rowGameObject.AddComponentIfDoesntExist<TableRow> ();
 			row.table = this;
+
+			// select row when it is clicked
+			rowGameObject.AddComponentIfDoesntExist<UIEventsPickup>().onPointerClick += (obj) => {
+				this.SelectRow( row, true );
+			};
 
 
 			// create entries

@@ -10,7 +10,7 @@ namespace uGameCore {
 	public static	class ExtensionMethods {
 
 
-		// T should inherit UnityEngine.Object
+		// TODO: T should inherit UnityEngine.Object
 		public	static	IEnumerable<T>	WhereNotNull<T>( this IEnumerable<T> enumerable ) where T : class {
 
 			foreach (var el in enumerable) {
@@ -427,6 +427,39 @@ namespace uGameCore {
 			var colors = button.colors;
 			colors.normalColor = normalColor;
 			button.colors = colors;
+
+		}
+
+
+		/// <summary>
+		/// Makes sure all color components are between 0 and 1. If colors are below 0, they are increased
+		/// so that minimum value is 0. If colors are higher than 1, they are scaled so that maximum color
+		/// is 1. Alpha value is just clamped between 0 and 1.
+		/// </summary>
+		public	static	void	NormalizeIfNeeded (this Color color) {
+
+			color.a = Mathf.Clamp01 (color.a);
+
+
+			float minColor = Mathf.Min (color.r, Mathf.Min (color.g, color.b));
+
+			if (minColor < 0f) {
+				// increase all colors so that minimum color is 0
+				float increase = -minColor;
+				color.r += increase;
+				color.g += increase;
+				color.b += increase;
+			}
+
+			float maxColor = Mathf.Max (color.r, Mathf.Max (color.g, color.b));
+
+			if (maxColor > 1f) {
+				// scale all values, so that the maximum value is 1
+				float mul = 1.0f / maxColor;
+				color.r *= mul;
+				color.g *= mul;
+				color.b *= mul;
+			}
 
 		}
 
