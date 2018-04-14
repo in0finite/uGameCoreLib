@@ -11,7 +11,7 @@ namespace uGameCore.Menu.Windows {
 
 		static	int	lastId = 0 ;
 		static	List<Window>	m_openedWindows = new List<Window> ();
-		public	static	IEnumerable<Window>	OpenedWindows { get { return m_openedWindows.WhereNotNull (); } }
+		public	static	IEnumerable<Window>	OpenedWindows { get { return m_openedWindows.WhereAlive (); } }
 
 		private	static	Canvas	m_windowsCanvas = null;
 		public	static	Canvas	WindowsCanvas { get { return m_windowsCanvas; } }

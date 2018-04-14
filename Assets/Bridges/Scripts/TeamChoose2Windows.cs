@@ -109,7 +109,7 @@ namespace uGameCore.Menu.Windows {
 
 		void CloseAllChooseTeamWindows() {
 
-			foreach (var w in WindowManager.OpenedWindows) {
+			foreach (var w in WindowManager.OpenedWindows.ToList()) {
 				if (w.procedure == WindowProcedure) {
 					WindowManager.CloseWindow (w);
 				}
