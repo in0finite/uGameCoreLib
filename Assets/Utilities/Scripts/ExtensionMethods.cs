@@ -88,6 +88,16 @@ namespace uGameCore {
 
 		}
 
+		public	static	bool	AddIfDoesntExist<T>( this ICollection<T> collection, T obj ) {
+
+			if (!collection.Contains (obj)) {
+				collection.Add (obj);
+				return true;
+			}
+
+			return false;
+		}
+
 		public	static	void	AddOrSet<TKey, TValue>( this Dictionary<TKey, TValue> dictionary, TKey key, TValue value ) {
 			
 			if (dictionary.ContainsKey (key))

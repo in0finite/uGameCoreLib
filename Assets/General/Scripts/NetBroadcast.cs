@@ -75,13 +75,23 @@ namespace uGameCore {
 
 			StartCoroutine (BroadcastCoroutine ());
 
+			StartCoroutine (ReadDataClientCoroutine ());
+
 			StartCoroutine (SimulateReceivingCoroutine ());
 
 		}
 
+		void OnDestroy()
+		{
+
+			ShutdownUdpClients ();
+
+		}
+
+
 		private	static	System.Collections.IEnumerator	SimulateReceivingCoroutine() {
 
-			yield return new WaitForSeconds (4f);
+			yield return new WaitForSecondsRealtime (4f);
 
 			// generate some random IPs
 			string[] ips = new string[15];
@@ -95,7 +105,7 @@ namespace uGameCore {
 				yield return null;
 
 				float pauseTime = Random.Range (0.1f, 0.7f);
-				yield return new WaitForSeconds (pauseTime);
+				yield return new WaitForSecondsRealtime (pauseTime);
 
 				if (!IsListening ())
 					continue;
@@ -208,7 +218,10 @@ namespace uGameCore {
 			if (m_serverUdpCl != null)
 				return;
 
-			m_serverUdpCl = new UdpClient (new IPEndPoint (IPAddress.Any, m_serverPort));
+		//	m_serverUdpCl = new UdpClient (new IPEndPoint (IPAddress.Any, m_serverPort));
+			m_serverUdpCl = new UdpClient ();
+			m_serverUdpCl.EnableBroadcast = true;
+		//	m_serverUdpCl.JoinMulticastGroup (IPAddress.Parse("127.0.0.1"));
 
 		}
 
@@ -217,26 +230,69 @@ namespace uGameCore {
 			if (m_clientUdpCl != null)
 				return;
 
-			var localEP = new IPEndPoint(IPAddress.Any, m_clientPort);
-			m_clientUdpCl = new UdpClient(localEP);
+		//	var localEP = new IPEndPoint(IPAddress.Any, m_clientPort);
+			m_clientUdpCl = new UdpClient (m_clientPort);
+			m_clientUdpCl.EnableBroadcast = true;
+			// TODO: turn off receiving from our IP
 
-			m_clientUdpCl.BeginReceive(new System.AsyncCallback(ReceiveCallback), null);
+		//	m_clientUdpCl.BeginReceive(new System.AsyncCallback(ReceiveCallback), null);
 
 		}
 
-		private static void ReceiveCallback(System.IAsyncResult ar)
-		{
+		private	static	void	ShutdownUdpClients() {
 
-			IPEndPoint remoteEP = null;
-			byte[] receivedBytes = m_clientUdpCl.EndReceive (ar, ref remoteEP);
+			StopBroadcastingAndListening ();
 
-			if (IsListening ()) {
-				if (remoteEP != null && receivedBytes != null) {
-					string serverIP = remoteEP.Address.ToString ();
-					var dict = ConvertByteArrayToDictionary (receivedBytes);
+			if (m_serverUdpCl != null) {
+				m_serverUdpCl.Close ();
+				m_serverUdpCl = null;
+			}
 
-					OnReceivedBroadcastData (new BroadcastData (serverIP, dict));
-				}
+			if (m_clientUdpCl != null) {
+				m_clientUdpCl.Close ();
+				m_clientUdpCl = null;
+			}
+
+		}
+
+
+		private	static	System.Collections.IEnumerator	ReadDataClientCoroutine() {
+
+			while (true) {
+
+				yield return new WaitForSecondsRealtime (0.3f);
+
+				if (null == m_clientUdpCl)
+					continue;
+
+				// measure time for call to UdpClient.Available
+//				var stopwatch = System.Diagnostics.Stopwatch.StartNew ();
+//				int availableBytesInNetworkBuffer = m_clientUdpCl.Available;
+//				long elapsedTime = stopwatch.ElapsedMilliseconds;
+//				Debug.Log ("UdpClient.Available time " + elapsedTime);
+
+				// only proceed if there is available data in network buffer, or otherwise Receive() will block
+				if (m_clientUdpCl.Available <= 0)
+					continue;
+
+				Utilities.Utilities.RunExceptionSafe (() => {
+				
+					IPEndPoint remoteEP = new IPEndPoint (IPAddress.Any, 0);
+					byte[] receivedBytes = m_clientUdpCl.Receive (ref remoteEP);
+
+					Debug.LogFormat ("NetBroadcast: received broadcast data [{0}] from {1}", receivedBytes.Length, remoteEP.ToString ());
+
+					if (IsListening ()) {
+						if (remoteEP != null && receivedBytes != null && receivedBytes.Length > 0) {
+							string serverIP = remoteEP.Address.ToString ();
+							var dict = ConvertByteArrayToDictionary (receivedBytes);
+
+							OnReceivedBroadcastData (new BroadcastData (serverIP, dict));
+						}
+					}
+
+				});
+
 			}
 
 		}
@@ -245,7 +301,7 @@ namespace uGameCore {
 			
 			while (true)
 			{
-				yield return new WaitForSeconds (1f);
+				yield return new WaitForSecondsRealtime (1f);
 
 				if (!m_isBroadcasting)
 					continue;
@@ -256,9 +312,31 @@ namespace uGameCore {
 				if (null == m_serverUdpCl)
 					continue;
 
+				// TODO: data should be broadcasted to internal networks only ? e.g. those that start with 192
+				// TODO: should we send to every local IP, or just to broadcast IP (255.255.255.255)
+				// TODO: measure time for this
+
 				Utilities.Utilities.RunExceptionSafe (() => {
+					var localAddresses = GetLocalIPv4Addresses();
+					Debug.Log("local addresses: \n" + string.Join("\n", localAddresses.Select( ip => ip.ToString() ).ToArray() ) );
 					byte[] buffer = ConvertDictionaryToByteArray (m_dataForBroadcasting);
-					m_serverUdpCl.Send (buffer, buffer.Length, new IPEndPoint (IPAddress.Broadcast, m_clientPort));
+					IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, m_clientPort);
+					foreach(var address in localAddresses) {
+						byte[] addressBytes = address.GetAddressBytes();
+						addressBytes[3] = 255;	// convert it to broadcast address
+						endPoint.Address = new IPAddress(addressBytes);
+						try {
+							m_serverUdpCl.Send (buffer, buffer.Length, endPoint);
+						} catch(SocketException ex) {
+							if(ex.ErrorCode == 10051) {
+								// Network is unreachable
+								// ignore this error
+
+							} else {
+								throw;
+							}
+						}
+					}
 				});
 
 			}
@@ -375,6 +453,35 @@ namespace uGameCore {
 			m_memoryStream.Write (data, 0, data.Length);
 
 			return (Dictionary<string, string>) m_binaryFormatter.Deserialize (m_memoryStream);
+		}
+
+
+		/// <summary>
+		/// Gets all IPv4 addresses that are associated with this machine.
+		/// </summary>
+		public	static	List<IPAddress>	GetLocalIPv4Addresses() {
+
+			var localAddresses = new List<IPAddress> ();
+
+			// this may not work on all devices - so, you can expect NotSupportedException or null returned from some of the functions
+
+
+			// we don't want exceptions to be thrown from here
+
+			// when I think it over, why not to throw exceptions ? the caller should process them
+
+			IPHostEntry hostEntry = Dns.GetHostEntry(Dns.GetHostName());
+
+			foreach(var address in hostEntry.AddressList) {
+				if (address.AddressFamily == AddressFamily.InterNetwork) {
+					// this is IPv4 address
+					// check if it is local address ?
+
+					localAddresses.AddIfDoesntExist( address );
+				}
+			}
+
+			return localAddresses;
 		}
 
 

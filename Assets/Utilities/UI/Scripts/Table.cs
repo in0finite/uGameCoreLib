@@ -9,7 +9,7 @@ namespace uGameCore.Utilities.UI {
 	
 	public class Table : MonoBehaviour, ILayoutElement {
 
-		// TODO: select rows, change color of selected rows, change color of header, sort rows, 
+		// TODO: sort rows, 
 
 
 		public enum ColumnWidthType {
