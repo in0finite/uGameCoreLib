@@ -108,6 +108,20 @@ namespace uGameCore {
 		}
 
 
+		public	static	long	GetElapsedMicroSeconds( this System.Diagnostics.Stopwatch stopwatch ) {
+
+			long freq = System.Diagnostics.Stopwatch.Frequency;
+
+			if (freq > 0) {
+				double elapsedSeconds = stopwatch.ElapsedTicks / (double)freq;
+				return (long) (elapsedSeconds * 1000 * 1000);
+			}
+
+			// fallback to miliseconds
+			return stopwatch.ElapsedMilliseconds * 1000;
+		}
+
+
 		public	static	bool	IsControllingPhysics( this NetworkBehaviour networkBehaviour ) {
 
 			return networkBehaviour.isServer;

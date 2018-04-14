@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
+using UnityEngine.Profiling;
 
 namespace uGameCore {
 
@@ -301,7 +302,7 @@ namespace uGameCore {
 			
 			while (true)
 			{
-				yield return new WaitForSecondsRealtime (1f);
+				yield return new WaitForSecondsRealtime (2f);
 
 				if (!m_isBroadcasting)
 					continue;
@@ -314,17 +315,34 @@ namespace uGameCore {
 
 				// TODO: data should be broadcasted to internal networks only ? e.g. those that start with 192
 				// TODO: should we send to every local IP, or just to broadcast IP (255.255.255.255)
-				// TODO: measure time for this
+
+				// measured time: average 0.8 ms for 2 IP addresses
+
+				var stopwatch = System.Diagnostics.Stopwatch.StartNew ();
+				Profiler.BeginSample ("Broadcast");
 
 				Utilities.Utilities.RunExceptionSafe (() => {
+					
+					Profiler.BeginSample("GetLocalIPv4Addresses");
 					var localAddresses = GetLocalIPv4Addresses();
-					Debug.Log("local addresses: \n" + string.Join("\n", localAddresses.Select( ip => ip.ToString() ).ToArray() ) );
+					Profiler.EndSample();
+
+				//	Debug.Log("local addresses: \n" + string.Join("\n", localAddresses.Select( ip => ip.ToString() ).ToArray() ) );
+
+					Profiler.BeginSample("ConvertDictionaryToByteArray");
 					byte[] buffer = ConvertDictionaryToByteArray (m_dataForBroadcasting);
+					Profiler.EndSample();
+
 					IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, m_clientPort);
+
 					foreach(var address in localAddresses) {
+
+						// convert it to broadcast address
 						byte[] addressBytes = address.GetAddressBytes();
-						addressBytes[3] = 255;	// convert it to broadcast address
+						addressBytes[3] = 255;
 						endPoint.Address = new IPAddress(addressBytes);
+
+						Profiler.BeginSample("UdpClient.Send");
 						try {
 							m_serverUdpCl.Send (buffer, buffer.Length, endPoint);
 						} catch(SocketException ex) {
@@ -336,8 +354,13 @@ namespace uGameCore {
 								throw;
 							}
 						}
+						Profiler.EndSample();
+
 					}
 				});
+
+				Profiler.EndSample ();
+				Debug.Log ("Broadcast send time: " + stopwatch.GetElapsedMicroSeconds() + " us");
 
 			}
 
