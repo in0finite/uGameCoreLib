@@ -462,9 +462,11 @@ namespace uGameCore {
 
 		public	static	byte[]	ConvertDictionaryToByteArray( Dictionary<string, string> dict ) {
 
+			var list = dict.ToList ();
+
 			m_memoryStream.SetLength (0);
-			m_memoryStream.Seek (0, System.IO.SeekOrigin.Begin);
-			m_binaryFormatter.Serialize(m_memoryStream, dict);
+			m_memoryStream.Position = 0;
+			m_binaryFormatter.Serialize(m_memoryStream, list);
 
 			return m_memoryStream.ToArray ();
 		}
@@ -472,10 +474,14 @@ namespace uGameCore {
 		public	static	Dictionary<string, string>	ConvertByteArrayToDictionary( byte[] data ) {
 
 			m_memoryStream.SetLength (0);
-			m_memoryStream.Seek (0, System.IO.SeekOrigin.Begin);
+			m_memoryStream.Position = 0;
 			m_memoryStream.Write (data, 0, data.Length);
+			m_memoryStream.Position = 0;
 
-			return (Dictionary<string, string>) m_binaryFormatter.Deserialize (m_memoryStream);
+			var list = (List<KeyValuePair<string,string>>) m_binaryFormatter.Deserialize (m_memoryStream);
+
+			// (Dictionary<string, string>)
+			return list.ToDictionary (pair => pair.Key, pair => pair.Value);
 		}
 
 
