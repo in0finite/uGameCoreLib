@@ -40,8 +40,8 @@ namespace uGameCore {
 
 		public	static	NetBroadcast	singleton { get ; private set ; }
 
-		private	static	bool	m_isCustomNetworkDiscoveryInitialized = false;
-		private	static	CustomNetworkDiscovery	m_customNetworkDiscovery = null;
+	//	private	static	bool	m_isCustomNetworkDiscoveryInitialized = false;
+	//	private	static	CustomNetworkDiscovery	m_customNetworkDiscovery = null;
 
 		private	static	bool	m_isBroadcasting = false;
 		private	static	bool	m_isListening = false;
@@ -68,11 +68,11 @@ namespace uGameCore {
 			
 			singleton = this;
 
-			// create custom network discovery
-			m_customNetworkDiscovery = new GameObject ("NetworkDiscovery").AddComponent<CustomNetworkDiscovery> ();
-			DontDestroyOnLoad (m_customNetworkDiscovery.gameObject);
-			// register to event
-			m_customNetworkDiscovery.onReceivedBroadcast += (string arg1, string arg2) => { OnReceivedBroadcastFromCustomNetworkDiscovery(arg1, arg2); };
+//			// create custom network discovery
+//			m_customNetworkDiscovery = new GameObject ("NetworkDiscovery").AddComponent<CustomNetworkDiscovery> ();
+//			DontDestroyOnLoad (m_customNetworkDiscovery.gameObject);
+//			// register to event
+//			m_customNetworkDiscovery.onReceivedBroadcast += (string arg1, string arg2) => { OnReceivedBroadcastFromCustomNetworkDiscovery(arg1, arg2); };
 
 		}
 
@@ -82,9 +82,9 @@ namespace uGameCore {
 			NetworkEventsDispatcher.onServerStarted += this.MyOnServerStarted;
 			NetworkEventsDispatcher.onServerStopped += this.MyOnServerStopped;
 
-		//	StartCoroutine (BroadcastCoroutine ());
+			StartCoroutine (BroadcastCoroutine ());
 
-		//	StartCoroutine (ReadDataClientCoroutine ());
+			StartCoroutine (ReadDataClientCoroutine ());
 
 			StartCoroutine (SimulateReceivingCoroutine ());
 
@@ -158,7 +158,7 @@ namespace uGameCore {
 				UpdateBroadcastData ();
 
 				// assign broadcast data
-				m_customNetworkDiscovery.broadcastData = ConvertDictionaryToString (m_dataForBroadcasting);
+			//	m_customNetworkDiscovery.broadcastData = ConvertDictionaryToString (m_dataForBroadcasting);
 
 			}
 
@@ -168,8 +168,8 @@ namespace uGameCore {
 
 		public	static	bool	IsListening() {
 
-			return m_customNetworkDiscovery.isClient;
-		//	return m_isListening;
+		//	return m_customNetworkDiscovery.isClient;
+			return m_isListening;
 		}
 
 		public	static	void	StartListening() {
@@ -177,21 +177,21 @@ namespace uGameCore {
 			if (IsBroadcasting () || IsListening ())
 				return;
 
-		//	EnsureClientIsInitialized ();
-			EnsureCustomNetworkDiscoveryIsInitialized ();
+			EnsureClientIsInitialized ();
+		//	EnsureCustomNetworkDiscoveryIsInitialized ();
 
-			if (!m_customNetworkDiscovery.StartAsClient ()) {
-				Debug.LogError ("Failed to start listening on LAN");
-			}
+//			if (!m_customNetworkDiscovery.StartAsClient ()) {
+//				Debug.LogError ("Failed to start listening on LAN");
+//			}
 
-		//	m_isListening = true;
+			m_isListening = true;
 
 		}
 
 		public	static	bool	IsBroadcasting() {
 
-			return m_customNetworkDiscovery.isServer;
-		//	return m_isBroadcasting;
+		//	return m_customNetworkDiscovery.isServer;
+			return m_isBroadcasting;
 		}
 
 		public	static	void	StartBroadcasting() {
@@ -199,41 +199,41 @@ namespace uGameCore {
 			if (IsBroadcasting () || IsListening ())
 				return;
 
-		//	EnsureServerIsInitialized ();
-			EnsureCustomNetworkDiscoveryIsInitialized ();
+			EnsureServerIsInitialized ();
+		//	EnsureCustomNetworkDiscoveryIsInitialized ();
 
-			if (!m_customNetworkDiscovery.StartAsServer ()) {
-				Debug.LogError ("Failed to start broadcasting on LAN");
-			}
+//			if (!m_customNetworkDiscovery.StartAsServer ()) {
+//				Debug.LogError ("Failed to start broadcasting on LAN");
+//			}
 
-		//	m_isBroadcasting = true;
+			m_isBroadcasting = true;
 
 		}
 
 		public	static	void	StopBroadcastingAndListening() {
 
-			var savedHostId = m_customNetworkDiscovery.hostId;
+//			var savedHostId = m_customNetworkDiscovery.hostId;
+//
+//			if (m_customNetworkDiscovery.running && m_customNetworkDiscovery.hostId != -1) {
+//				m_customNetworkDiscovery.StopBroadcast ();
+//			}
+//
+//			m_customNetworkDiscovery.isServer = false;
+//			m_customNetworkDiscovery.isClient = false;
+//			m_customNetworkDiscovery.running = false;
+//			m_customNetworkDiscovery.hostId = -1;
+//
+//			m_isCustomNetworkDiscoveryInitialized = false;
+//
+//			if (NetworkTransport.IsBroadcastDiscoveryRunning ())
+//				NetworkTransport.StopBroadcastDiscovery ();
+//
+//			if (savedHostId != -1)
+//				NetworkTransport.RemoveHost (savedHostId);
 
-			if (m_customNetworkDiscovery.running && m_customNetworkDiscovery.hostId != -1) {
-				m_customNetworkDiscovery.StopBroadcast ();
-			}
 
-			m_customNetworkDiscovery.isServer = false;
-			m_customNetworkDiscovery.isClient = false;
-			m_customNetworkDiscovery.running = false;
-			m_customNetworkDiscovery.hostId = -1;
-
-			m_isCustomNetworkDiscoveryInitialized = false;
-
-			if (NetworkTransport.IsBroadcastDiscoveryRunning ())
-				NetworkTransport.StopBroadcastDiscovery ();
-
-			if (savedHostId != -1)
-				NetworkTransport.RemoveHost (savedHostId);
-
-
-		//	m_isBroadcasting = false;
-		//	m_isListening = false;
+			m_isBroadcasting = false;
+			m_isListening = false;
 
 		}
 
@@ -389,6 +389,7 @@ namespace uGameCore {
 		}
 
 
+		/*
 		private	static	void	EnsureCustomNetworkDiscoveryIsInitialized() {
 
 			if (m_isCustomNetworkDiscoveryInitialized)
@@ -401,8 +402,10 @@ namespace uGameCore {
 			}
 
 		}
+		*/
 
 
+		/*
 		private	static	void	OnReceivedBroadcastFromCustomNetworkDiscovery (string fromAddress, string data)
 		{
 			
@@ -418,6 +421,7 @@ namespace uGameCore {
 			);
 
 		}
+		*/
 
 
 		private	static	void	OnReceivedBroadcastData(BroadcastData broadcastData) {
