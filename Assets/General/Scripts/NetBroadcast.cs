@@ -40,15 +40,15 @@ namespace uGameCore {
 
 		public	static	NetBroadcast	singleton { get ; private set ; }
 
-	//	private	static	bool	m_isInitialized = false;
+		private	static	bool	m_isCustomNetworkDiscoveryInitialized = false;
+		private	static	CustomNetworkDiscovery	m_customNetworkDiscovery = null;
 
 		private	static	bool	m_isBroadcasting = false;
 		private	static	bool	m_isListening = false;
 
 
 
-		private	static	int	m_serverPort = 18300;
-		private	static	int m_clientPort = 18301;
+		private	static	int m_clientPort = 18417;
 		private	static	UdpClient m_serverUdpCl = null;
 		private	static	UdpClient m_clientUdpCl = null;
 
@@ -63,8 +63,16 @@ namespace uGameCore {
 
 		void Awake ()
 		{
-			if (null == singleton)
-				singleton = this;
+			if (singleton != null)
+				return;
+			
+			singleton = this;
+
+			// create custom network discovery
+			m_customNetworkDiscovery = new GameObject ("NetworkDiscovery").AddComponent<CustomNetworkDiscovery> ();
+			DontDestroyOnLoad (m_customNetworkDiscovery.gameObject);
+			// register to event
+			m_customNetworkDiscovery.onReceivedBroadcast += (string arg1, string arg2) => { OnReceivedBroadcastFromCustomNetworkDiscovery(arg1, arg2); };
 
 		}
 
@@ -74,9 +82,9 @@ namespace uGameCore {
 			NetworkEventsDispatcher.onServerStarted += this.MyOnServerStarted;
 			NetworkEventsDispatcher.onServerStopped += this.MyOnServerStopped;
 
-			StartCoroutine (BroadcastCoroutine ());
+		//	StartCoroutine (BroadcastCoroutine ());
 
-			StartCoroutine (ReadDataClientCoroutine ());
+		//	StartCoroutine (ReadDataClientCoroutine ());
 
 			StartCoroutine (SimulateReceivingCoroutine ());
 
@@ -144,26 +152,24 @@ namespace uGameCore {
 
 		void Update ()
 		{
-
-			// TODO: call NetworkDiscovery.Update()
-
-
+			
 			if (NetworkStatus.IsServerStarted ()) {
 
 				UpdateBroadcastData ();
 
 				// assign broadcast data
-			//	this.broadcastData = ConvertDictionaryToString (m_dataForBroadcasting);
+				m_customNetworkDiscovery.broadcastData = ConvertDictionaryToString (m_dataForBroadcasting);
 
 			}
 
 		}
 
 
+
 		public	static	bool	IsListening() {
 
-		//	return singleton.isClient;
-			return m_isListening;
+			return m_customNetworkDiscovery.isClient;
+		//	return m_isListening;
 		}
 
 		public	static	void	StartListening() {
@@ -171,20 +177,21 @@ namespace uGameCore {
 			if (IsBroadcasting () || IsListening ())
 				return;
 
-			EnsureClientIsInitialized ();
+		//	EnsureClientIsInitialized ();
+			EnsureCustomNetworkDiscoveryIsInitialized ();
 
-//			if (!singleton.StartAsClient ()) {
-//				Debug.LogError ("Failed to start listening on LAN");
-//			}
+			if (!m_customNetworkDiscovery.StartAsClient ()) {
+				Debug.LogError ("Failed to start listening on LAN");
+			}
 
-			m_isListening = true;
+		//	m_isListening = true;
 
 		}
 
 		public	static	bool	IsBroadcasting() {
 
-		//	return singleton.isServer;
-			return m_isBroadcasting;
+			return m_customNetworkDiscovery.isServer;
+		//	return m_isBroadcasting;
 		}
 
 		public	static	void	StartBroadcasting() {
@@ -192,25 +199,41 @@ namespace uGameCore {
 			if (IsBroadcasting () || IsListening ())
 				return;
 
-			EnsureServerIsInitialized ();
+		//	EnsureServerIsInitialized ();
+			EnsureCustomNetworkDiscoveryIsInitialized ();
 
-//			if (!this.StartAsServer ()) {
-//				Debug.LogError ("Failed to start broadcasting on LAN");
-//			}
+			if (!m_customNetworkDiscovery.StartAsServer ()) {
+				Debug.LogError ("Failed to start broadcasting on LAN");
+			}
 
-			m_isBroadcasting = true;
+		//	m_isBroadcasting = true;
 
 		}
 
 		public	static	void	StopBroadcastingAndListening() {
 
-//			if (singleton.running) {
-//				singleton.StopBroadcast ();
-//				m_isInitialized = false;
-//			}
+			var savedHostId = m_customNetworkDiscovery.hostId;
 
-			m_isBroadcasting = false;
-			m_isListening = false;
+			if (m_customNetworkDiscovery.running && m_customNetworkDiscovery.hostId != -1) {
+				m_customNetworkDiscovery.StopBroadcast ();
+			}
+
+			m_customNetworkDiscovery.isServer = false;
+			m_customNetworkDiscovery.isClient = false;
+			m_customNetworkDiscovery.running = false;
+			m_customNetworkDiscovery.hostId = -1;
+
+			m_isCustomNetworkDiscoveryInitialized = false;
+
+			if (NetworkTransport.IsBroadcastDiscoveryRunning ())
+				NetworkTransport.StopBroadcastDiscovery ();
+
+			if (savedHostId != -1)
+				NetworkTransport.RemoveHost (savedHostId);
+
+
+		//	m_isBroadcasting = false;
+		//	m_isListening = false;
 
 		}
 
@@ -219,7 +242,6 @@ namespace uGameCore {
 			if (m_serverUdpCl != null)
 				return;
 
-		//	m_serverUdpCl = new UdpClient (new IPEndPoint (IPAddress.Any, m_serverPort));
 			m_serverUdpCl = new UdpClient ();
 			m_serverUdpCl.EnableBroadcast = true;
 		//	m_serverUdpCl.JoinMulticastGroup (IPAddress.Parse("127.0.0.1"));
@@ -366,27 +388,24 @@ namespace uGameCore {
 
 		}
 
-		/*
-		private	static	void	EnsureItIsInitialized() {
 
-			if (m_isInitialized)
+		private	static	void	EnsureCustomNetworkDiscoveryIsInitialized() {
+
+			if (m_isCustomNetworkDiscoveryInitialized)
 				return;
 
-			if (!singleton.Initialize ()) {
+			if (!m_customNetworkDiscovery.Initialize ()) {
 				Debug.LogError ("Failed to initialize network discovery");
 			} else {
-				m_isInitialized = true;
+				m_isCustomNetworkDiscoveryInitialized = true;
 			}
 
 		}
-		*/
 
 
-		/*
-		public override void OnReceivedBroadcast (string fromAddress, string data)
+		private	static	void	OnReceivedBroadcastFromCustomNetworkDiscovery (string fromAddress, string data)
 		{
-
-			// don't allow exceptions to be thrown from here
+			
 			Utilities.Utilities.RunExceptionSafe (() => {
 
 				// convert data to dictionary
@@ -399,7 +418,7 @@ namespace uGameCore {
 			);
 
 		}
-		*/
+
 
 		private	static	void	OnReceivedBroadcastData(BroadcastData broadcastData) {
 
@@ -436,6 +455,7 @@ namespace uGameCore {
 
 			RegisterDataForBroadcasting ("Port", NetManager.listenPortNumber.ToString ());
 			RegisterDataForBroadcasting ("Players", PlayerManager.players.Count ().ToString ());
+			// TODO: this should be the current scene, not online scene
 			RegisterDataForBroadcasting ("Map", NetManager.onlineScene);
 
 
