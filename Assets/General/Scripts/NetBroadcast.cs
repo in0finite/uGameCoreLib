@@ -287,34 +287,38 @@ namespace uGameCore {
 
 				if (null == m_clientUdpCl)
 					continue;
-
-				// measure time for call to UdpClient.Available
-//				var stopwatch = System.Diagnostics.Stopwatch.StartNew ();
-//				int availableBytesInNetworkBuffer = m_clientUdpCl.Available;
-//				long elapsedTime = stopwatch.ElapsedMilliseconds;
-//				Debug.Log ("UdpClient.Available time " + elapsedTime);
-
+				
 				// only proceed if there is available data in network buffer, or otherwise Receive() will block
+				// average time for UdpClient.Available : 10 us
 				if (m_clientUdpCl.Available <= 0)
 					continue;
 
+				// average time for this: less than 100 us
+				Profiler.BeginSample ("ReceiveBroadcast");
+				var timer = System.Diagnostics.Stopwatch.StartNew ();
 				Utilities.Utilities.RunExceptionSafe (() => {
 				
+					Profiler.BeginSample("UdpClient.Receive");
 					IPEndPoint remoteEP = new IPEndPoint (IPAddress.Any, 0);
 					byte[] receivedBytes = m_clientUdpCl.Receive (ref remoteEP);
+					Profiler.EndSample ();
 
-					Debug.LogFormat ("NetBroadcast: received broadcast data [{0}] from {1}", receivedBytes.Length, remoteEP.ToString ());
+				//	Debug.LogFormat ("NetBroadcast: received broadcast data [{0}] from {1}", receivedBytes.Length, remoteEP.ToString ());
 
 					if (IsListening ()) {
 						if (remoteEP != null && receivedBytes != null && receivedBytes.Length > 0) {
 							string serverIP = remoteEP.Address.ToString ();
+							Profiler.BeginSample ("ConvertData");
 							var dict = ConvertByteArrayToDictionary (receivedBytes);
+							Profiler.EndSample ();
 
 							OnReceivedBroadcastData (new BroadcastData (serverIP, dict));
 						}
 					}
 
 				});
+				Debug.Log("receive broadcast time: " + timer.GetElapsedMicroSeconds () + " us");
+				Profiler.EndSample ();
 
 			}
 
