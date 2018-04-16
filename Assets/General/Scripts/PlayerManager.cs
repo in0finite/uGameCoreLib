@@ -26,6 +26,10 @@ namespace uGameCore {
 			}
 		}
 
+		/// <summary> Number of logged in players. </summary>
+		public	static	int	numPlayers { get { return PlayerManager.players.Count (); } }
+
+
 
 		// Use this for initialization
 		void Start () {

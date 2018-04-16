@@ -88,6 +88,8 @@ namespace uGameCore {
 
 			StartCoroutine (SimulateReceivingCoroutine ());
 
+			// TODO: assign id for broadcasting
+
 		}
 
 		void OnDestroy()
@@ -317,7 +319,7 @@ namespace uGameCore {
 					}
 
 				});
-				Debug.Log("receive broadcast time: " + timer.GetElapsedMicroSeconds () + " us");
+			//	Debug.Log("receive broadcast time: " + timer.GetElapsedMicroSeconds () + " us");
 				Profiler.EndSample ();
 
 			}
@@ -462,12 +464,20 @@ namespace uGameCore {
 			// - map time - depends on Map management
 
 			RegisterDataForBroadcasting ("Port", NetManager.listenPortNumber.ToString ());
-			RegisterDataForBroadcasting ("Players", PlayerManager.players.Count ().ToString ());
-			// TODO: this should be the current scene, not online scene
-			RegisterDataForBroadcasting ("Map", NetManager.onlineScene);
+			RegisterDataForBroadcasting ("Players", PlayerManager.numPlayers.ToString ());
+			RegisterDataForBroadcasting ("Map", UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
 
 
 		}
+
+		/*
+		public	static	string	ComputeBroadcastId() {
+
+			// hash of the following:
+			// Application.companyName + Application.productName + Application.version
+
+		}
+		*/
 
 
 		public	static	string	ConvertDictionaryToString( Dictionary<string, string> dict ) {
