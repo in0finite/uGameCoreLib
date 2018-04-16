@@ -297,7 +297,7 @@ namespace uGameCore {
 
 				// average time for this: less than 100 us
 				Profiler.BeginSample ("ReceiveBroadcast");
-				var timer = System.Diagnostics.Stopwatch.StartNew ();
+			//	var timer = System.Diagnostics.Stopwatch.StartNew ();
 				Utilities.Utilities.RunExceptionSafe (() => {
 				
 					Profiler.BeginSample("UdpClient.Receive");

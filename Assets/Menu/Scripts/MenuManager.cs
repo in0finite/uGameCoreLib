@@ -264,14 +264,40 @@ namespace uGameCore.Menu {
 				if(null == tabView.ActiveTab)
 					throw new System.Exception("No tab is selected");
 
-				if(tabView.ActiveTab.tabButtonText != "Direct")
-					throw new System.NotSupportedException("Currently, you can only connect to server by " +
-						"specifying his address manually in Direct tab");
+				string ip = "";
+				int port = 0;
 
-				RectTransform rectTransform = tabView.ActiveTab.panel.GetRectTransform ();
+				string activeTabText = tabView.ActiveTab.tabButtonText;
 
-				string ip = ReadInputField( rectTransform, "Ip");
-				int port = int.Parse (ReadInputField (rectTransform, "PortNumber"));
+				if (activeTabText == "Direct") {
+					// read ip and port from input controls
+
+					RectTransform rectTransform = tabView.ActiveTab.panel.GetRectTransform ();
+
+					ip = ReadInputField( rectTransform, "Ip");
+					port = int.Parse (ReadInputField (rectTransform, "PortNumber"));
+
+				} else if (activeTabText == "LAN") {
+					// read ip and port from table
+
+					var table = tabView.ActiveTab.panel.GetComponentInChildren<Utilities.UI.Table>();
+					if(null == table)
+						throw new Utilities.ObjectNotFoundException("Table with LAN servers not found");
+
+					if(table.RowsCount < 1)
+						throw new System.Exception("No servers available");
+
+					if(null == table.SelectedRow)
+						throw new System.Exception("Select a server first");
+
+					var serverData = LANScan2UI.GetBroadcastDataFromRow( table.SelectedRow );
+					ip = serverData.FromAddress ;
+					port = int.Parse( serverData.KeyValuePairs["Port"] );
+
+				} else {
+					throw new System.Exception("Unknown tab opened");
+				}
+
 
 				NetManager.StartClient (ip, port);
 
