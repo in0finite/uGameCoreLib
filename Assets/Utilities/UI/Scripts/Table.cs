@@ -524,6 +524,12 @@ namespace uGameCore.Utilities.UI {
 
 			float multiplier = parentWidth / totalColumnsWidth;
 
+			this.StretchColumns (multiplier);
+
+		}
+
+		public	void	StretchColumns( float multiplier ) {
+
 			foreach (var column in this.columns) {
 				float currentWidth = column.GetWidth (this);
 

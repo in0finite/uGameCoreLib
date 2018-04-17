@@ -44,6 +44,10 @@ namespace uGameCore {
 			// register to broadcast received event
 			NetBroadcast.onReceivedBroadcast += this.OnReceivedBroadcast ;
 
+			if (this.table) {
+				AdjustColumnWidthsWhenTableBecomesActive (this.table);
+			}
+
 		}
 
 		public	static	void	StopListeningLater() {
@@ -76,6 +80,33 @@ namespace uGameCore {
 			if (table)
 				table.UpdateTable ();
 		}
+
+		public	static	void	AdjustColumnWidthsWhenTableBecomesActive (Table table) {
+
+			singleton.StartCoroutine (CoroutineAdjustColumnWidthsWhenTableBecomesActive (table));
+
+		}
+
+		private	static	System.Collections.IEnumerator	CoroutineAdjustColumnWidthsWhenTableBecomesActive (Table table) {
+
+			yield return null;
+
+			while (true) {
+
+				if (null == table)
+					break;
+
+				if (table.gameObject.activeSelf && table.gameObject.activeInHierarchy) {
+					AdjustColumnWidths (table);
+					table.UpdateTable ();
+					break;
+				}
+
+				yield return null;
+			}
+
+		}
+
 
 		void OnTabSwitched() {
 
@@ -213,36 +244,33 @@ namespace uGameCore {
 
 		public	static	void	AdjustColumnWidths( Table table ) {
 
-			if (null == table.GetHeaderRow ())
-				return;
-
-			// make sure table transform is updated
-		//	table.SetTableTransform ();
-
+		//	if (null == table.GetHeaderRow ())
+		//		return;
+			
 			// make sure header row is updated
-			table.UpdateRow( table.GetHeaderRow() );
-
-			table.SetColumnWidthsBasedOnText ();
-
-			// stretch them to fit parent
-			table.ResizeColumnsToFitParent ();
+		//	table.UpdateRow( table.GetHeaderRow() );
 
 			// now, do some adjustments
 
-			var column = table.GetColumnByName( "IP" );
-			if (column != null)
-				column.absoluteWidth = Mathf.Max (130, column.absoluteWidth);
+			string[] columnsToAdjust = new string[]{"IP", "Port", "Players", "Map"};
+			int[] columnWidths = new int[]{140, 60, 60, 140};
 
-			column = table.GetColumnByName( "Port" );
-			if (column != null)
-				column.absoluteWidth = Mathf.Min (60, column.absoluteWidth);
+			for (int i = 0; i < columnsToAdjust.Length; i++) {
+				var column = table.GetColumnByName( columnsToAdjust[i] );
+				if(column != null) {
+					column.widthType = Table.ColumnWidthType.Absolute;
+					column.absoluteWidth = columnWidths [i];
+				}
+			}
 
-			column = table.GetColumnByName( "Players" );
-			if (column != null)
-				column.absoluteWidth = Mathf.Min (60, column.absoluteWidth);
+			float tableWidth = table.GetTotalColumnsWidth ();
+			float scrollViewWidth = table.transform.parent.parent.parent.GetRectTransform ().GetRect ().width;
+			if (tableWidth < scrollViewWidth) {
+				// stretch columns so that table width is equal to scrollview width
+				if (tableWidth > 0)
+					table.StretchColumns (scrollViewWidth / tableWidth);
+			}
 
-			// now stretch them again
-			table.ResizeColumnsToFitParent ();
 
 		}
 
