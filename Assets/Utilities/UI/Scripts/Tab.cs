@@ -9,8 +9,14 @@ namespace uGameCore.Utilities.UI {
 		public	RectTransform	button ;
 		public	RectTransform	panel ;
 
+		private	bool	m_savedOriginalButtonColor = false;
 		private	Color	m_originalButtonColor = Color.white;
-		public Color originalButtonColor { get { return this.m_originalButtonColor; } }
+		public Color originalButtonColor {
+			get {
+				this.SaveOriginalButtonColorIfNeeded ();
+				return m_originalButtonColor;
+			}
+		}
 
 		/// <summary> Image component attached to button. </summary>
 		public Image buttonImageComponent { get { if(this.button) return this.button.GetComponent<Image>(); else return null; } }
@@ -33,6 +39,9 @@ namespace uGameCore.Utilities.UI {
 		void Awake()
 		{
 			
+			if (this.button)
+				this.SaveOriginalButtonColorIfNeeded ();
+			
 		}
 
 		void Start()
@@ -40,8 +49,17 @@ namespace uGameCore.Utilities.UI {
 			// add button click listener which will change active tab
 			this.buttonComponent.onClick.AddListener( () => { this.tabView.SwitchTab(this); } );
 
-			// remember normal color of button
-			m_originalButtonColor = this.buttonImageComponent.color;
+			// remember original color of button - maybe it wasn't done in Awake() because button was null
+			this.SaveOriginalButtonColorIfNeeded ();
+
+		}
+
+		void SaveOriginalButtonColorIfNeeded() {
+
+			if (!m_savedOriginalButtonColor) {
+				m_originalButtonColor = this.buttonImageComponent.color;
+				m_savedOriginalButtonColor = true;
+			}
 
 		}
 

@@ -89,6 +89,7 @@ namespace uGameCore {
 
 		private	static	System.Collections.IEnumerator	CoroutineAdjustColumnWidthsWhenTableBecomesActive (Table table) {
 
+			// without pausing one frame, it will not work when called from Start()
 			yield return null;
 
 			while (true) {
