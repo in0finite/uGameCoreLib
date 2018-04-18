@@ -258,7 +258,7 @@ namespace uGameCore {
 		//	var localEP = new IPEndPoint(IPAddress.Any, m_clientPort);
 			m_clientUdpCl = new UdpClient (m_clientPort);
 			m_clientUdpCl.EnableBroadcast = true;
-			// TODO: turn off receiving from our IP
+			// TODO: turn off receiving from our IP ?
 
 		//	m_clientUdpCl.BeginReceive(new System.AsyncCallback(ReceiveCallback), null);
 
@@ -330,7 +330,7 @@ namespace uGameCore {
 			
 			while (true)
 			{
-				yield return new WaitForSecondsRealtime (2f);
+				yield return new WaitForSecondsRealtime (1.5f);
 
 				if (!m_isBroadcasting)
 					continue;
@@ -346,7 +346,7 @@ namespace uGameCore {
 
 				// measured time: average 0.8 ms for 2 IP addresses
 
-				var stopwatch = System.Diagnostics.Stopwatch.StartNew ();
+			//	var stopwatch = System.Diagnostics.Stopwatch.StartNew ();
 				Profiler.BeginSample ("Broadcast");
 
 				Utilities.Utilities.RunExceptionSafe (() => {
@@ -388,7 +388,7 @@ namespace uGameCore {
 				});
 
 				Profiler.EndSample ();
-				Debug.Log ("Broadcast send time: " + stopwatch.GetElapsedMicroSeconds() + " us");
+			//	Debug.Log ("Broadcast send time: " + stopwatch.GetElapsedMicroSeconds() + " us");
 
 			}
 
@@ -431,6 +431,8 @@ namespace uGameCore {
 
 
 		private	static	void	OnReceivedBroadcastData(BroadcastData broadcastData) {
+
+			// TODO: check if broadcast data is valid, e.g. if it contains port number, or if it contains only predefined keys
 
 			m_allReceivedBroadcastData.Add (broadcastData);
 
