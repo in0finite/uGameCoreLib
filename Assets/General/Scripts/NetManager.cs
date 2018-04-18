@@ -25,8 +25,7 @@ namespace uGameCore {
 
 			CheckIfNetworkIsStarted ();
 			CheckIfPortIsValid (portNumber);
-			// TODO: check if online scene is assigned
-
+			CheckIfOnlineSceneIsAssigned ();
 			SetupNetworkManger( "", portNumber );
 			NetworkManager.singleton.StartServer ();
 
@@ -36,6 +35,7 @@ namespace uGameCore {
 
 			CheckIfNetworkIsStarted ();
 			CheckIfPortIsValid (portNumber);
+			CheckIfOnlineSceneIsAssigned ();
 			SetupNetworkManger( "", portNumber );
 			NetworkManager.singleton.StartHost ();
 
@@ -56,6 +56,7 @@ namespace uGameCore {
 		public	static	void	StartClient( string ip, int serverPortNumber ) {
 
 			CheckIfNetworkIsStarted ();
+			CheckIfIPAddressIsValid (ip);
 			CheckIfPortIsValid (serverPortNumber);
 			SetupNetworkManger( ip, serverPortNumber );
 			NetworkManager.singleton.StartClient ();
@@ -105,6 +106,22 @@ namespace uGameCore {
 
 			if (portNumber < 1 || portNumber > 65535)
 				throw new System.ArgumentOutOfRangeException ( "portNumber", "Invalid port number");
+
+		}
+
+		private	static	void	CheckIfIPAddressIsValid( string ip ) {
+
+			if (string.IsNullOrEmpty (ip))
+				throw new System.ArgumentException ("IP address empty");
+
+		//	System.Net.IPAddress.Parse ();
+
+		}
+
+		private	static	void	CheckIfOnlineSceneIsAssigned() {
+
+			if (string.IsNullOrEmpty (NetManager.onlineScene))
+				throw new System.Exception ("Online scene is not assigned");
 
 		}
 
