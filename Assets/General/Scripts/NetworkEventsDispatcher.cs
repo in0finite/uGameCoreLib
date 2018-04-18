@@ -41,7 +41,7 @@ namespace uGameCore {
 
 				if (newServerStatus == NetworkServerStatus.Started) {
 
-					onServerStarted ();
+					InvokeEvent (onServerStarted);
 
 					this.Dispatch ("OnServerStarted");
 
@@ -51,7 +51,7 @@ namespace uGameCore {
 
 				} else if (newServerStatus == NetworkServerStatus.Stopped) {
 
-					onServerStopped ();
+					InvokeEvent (onServerStopped);
 
 					this.Dispatch ("OnServerStopped");
 
@@ -64,19 +64,19 @@ namespace uGameCore {
 
 				if (newClientStatus == NetworkClientStatus.Connecting) {
 
-					onClientStartedConnecting ();
+					InvokeEvent (onClientStartedConnecting);
 
 					this.Dispatch ("OnClientStartedConnecting");
 
 				} else if (newClientStatus == NetworkClientStatus.Connected) {
 
-					onClientConnected ();
+					InvokeEvent (onClientConnected);
 
 					this.Dispatch ("OnClientConnected");
 
 				} else if (newClientStatus == NetworkClientStatus.Disconnected) {
 
-					onClientDisconnected ();
+					InvokeEvent (onClientDisconnected);
 
 					this.Dispatch ("OnClientDisconnected");
 
@@ -95,6 +95,12 @@ namespace uGameCore {
 //				Debug.Log ("Dispatching " + message);
 //				this.BroadcastMessage (message, SendMessageOptions.DontRequireReceiver);
 //			}
+
+		}
+
+		private	static	void	InvokeEvent(System.MulticastDelegate ev) {
+
+			Utilities.Utilities.InvokeEventExceptionSafe (ev);
 
 		}
 
