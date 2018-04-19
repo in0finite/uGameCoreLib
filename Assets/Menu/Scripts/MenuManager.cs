@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -11,21 +12,32 @@ namespace uGameCore.Menu {
 	public class MenuManager : MonoBehaviour 
 	{
 
-	//	public bool isOpened { get ; protected set ; }
-
-
 		public string goBackButton = "Cancel";
 
-		public string openedMenuName { get ; protected set ; }
+		public	static	string	ActiveMenuName {
+			get {
+				if (m_activeMenu)
+					return m_activeMenu.menuName;
+				else
+					return "";
+			}
+		}
+
+		private	static	Menu	m_activeMenu = null;
+		public	static	Menu	ActiveMenu { get { return m_activeMenu; } }
+
+	//	private	static	List<Menu>	m_menus = new List<Menu> ();
+
+	//	internal	static	event System.Action	onActiveMenuChangedInternal = delegate {};
+		public	static	event System.Action	onActiveMenuChanged = delegate {};
 
 		public	string	startupMenuName = "";
 		public	string	inGameMenuName = "";
 		public	string	pauseMenuName = "" ;
 		public	string	gameOverMenuName = "";
 
-	//	public	GameObject	eventSystemObject = null ;
-
 		public	static	MenuManager	singleton { get ; private set ; }
+
 
 
 		void Awake() {
@@ -43,16 +55,16 @@ namespace uGameCore.Menu {
 				Debug.LogWarning ("EventSystem not found");
 			}
 
-			this.Open (this.startupMenuName);
+			SwitchMenu (this.startupMenuName);
 
 		}
 
 		void OnSceneChanged( SceneChangedInfo info ) {
 
 			if (IsInGameScene ()) {
-				this.Close ();
+				SwitchToInGameMenu ();
 			} else {
-				this.Open (startupMenuName);
+				SwitchMenu (startupMenuName);
 			}
 
 		}
@@ -60,7 +72,7 @@ namespace uGameCore.Menu {
 		/// <summary>
 		/// Are we in a game scene, or in the startup scene ?
 		/// </summary>
-		public	bool	IsInGameScene() {
+		public	static	bool	IsInGameScene() {
 
 			Scene scene = SceneManager.GetActiveScene ();
 
@@ -72,53 +84,57 @@ namespace uGameCore.Menu {
 
 		public	static	bool	IsInGameMenu() {
 
-			return singleton.openedMenuName == singleton.inGameMenuName ;
+			return singleton.inGameMenuName != "" && MenuManager.ActiveMenuName == singleton.inGameMenuName ;
 
 		}
 
-		public virtual void QuitToMenu() {
+		public	static	void	QuitToMainMenu() {
 
 			NetManager.StopNetwork ();
 
 		}
 
-		public	virtual	void	Open(string menu) {
+		public	static	void	SwitchMenu(string menuName) {
 
-			this.openedMenuName = menu;
-			//	this.isOpened = true;
+			Menu menu = FindMenuByName (menuName);
+			if (null == menu)
+				return;
+
+			SwitchMenu (menu);
+
+		}
+
+		public	static	void	SwitchMenu(Menu newMenu) {
+
+			if (m_activeMenu == newMenu)
+				return;
+
+			m_activeMenu = newMenu;
+
 			// enable event system
-			//	this.isInputEnabled = true ;
+		//	this.isInputEnabled = true ;
 
 			RemoveFocus ();
 
-		}
+			// notify menus
+			var allMenus = GetAllMenus ();
+			foreach (var m in allMenus) {
+				m.OnActiveMenuChanged ();
+			}
 
-		protected	virtual	void	Close() {
-
-			this.openedMenuName = this.inGameMenuName;
-
-			//	this.isOpened = false;
-
-			// disable event system
-			//	this.isInputEnabled = false ;
-
-			RemoveFocus ();
+			Utilities.Utilities.InvokeEventExceptionSafe (onActiveMenuChanged);
 
 		}
 
-		public	virtual	void	Pause() {
+		public	static	void	SwitchToInGameMenu() {
+			
+			SwitchMenu (singleton.inGameMenuName);
 
-			this.Open (this.pauseMenuName);
 		}
 
-		public	virtual	void	UnPause() {
+		public	static	void	Resign() {
 
-			this.Close ();
-		}
-
-		public	virtual	void	Resign() {
-
-			this.Open (this.gameOverMenuName);
+			SwitchMenu (singleton.gameOverMenuName);
 
 			// reset text
 			SetGameOverMenuDescriptionText( "" );
@@ -142,12 +158,11 @@ namespace uGameCore.Menu {
 		/// <summary> Opens parent of the current menu, if it exists. </summary>
 		public	void	OpenParentMenu() {
 
-			var currentMenu = FindCanvasByName (this.openedMenuName);
-			if (currentMenu != null) {
-				var parentMenu = currentMenu.GetComponent<Menu> ().parentMenu;
-				if (parentMenu != "") {
+			if (m_activeMenu != null) {
+				string parentMenuName = m_activeMenu.parentMenu;
+				if (parentMenuName != "") {
 					// switch to parent menu
-					this.Open (parentMenu);
+					SwitchMenu (parentMenuName);
 				}
 			}
 
@@ -165,28 +180,26 @@ namespace uGameCore.Menu {
 
 		void Update()
 		{
-
-
-			if (Input.GetButtonDown (goBackButton)) {
-				
-				// open parent menu if it exists
+			
+			if (Input.GetButtonDown (this.goBackButton)) {
 				OpenParentMenu ();
-
 			}
-
 
 		}
 
 
-		public	static	Menu	GetOpenedMenu() {
+		public	static	Menu[]	GetAllMenus() {
 
-			return FindMenuByName (singleton.openedMenuName);
+			return FindObjectsOfType<Menu> ();
 
 		}
 
 		public	static	Menu	FindMenuByName( string menuName ) {
 
-			Menu foundMenu = System.Array.Find (FindObjectsOfType<Menu> (), m => m.menuName == menuName);
+			if (string.IsNullOrEmpty (menuName))
+				return null;
+
+			Menu foundMenu = System.Array.Find ( GetAllMenus (), m => m.menuName == menuName);
 			return foundMenu;
 
 		}
@@ -202,18 +215,6 @@ namespace uGameCore.Menu {
 				throw new System.Exception ("Failed to find a menu with name: " + menuName);
 
 			return menu;
-		}
-
-		/// <summary>
-		/// Finds canvas which has the menu component attached with specified name.
-		/// </summary>
-		public	static	Canvas FindCanvasByName(string menuName) {
-
-			var menu = MenuManager.FindMenuByName (menuName);
-			if (null == menu)
-				return null;
-
-			return menu.GetComponent<Canvas> ();
 		}
 
 		public	static	Menu	FindJoinGameMenu() {
@@ -239,7 +240,7 @@ namespace uGameCore.Menu {
 		}
 
 
-		public	void	StartServerWithSpecifiedOptions( bool asHost ) {
+		public	static	void	StartServerWithSpecifiedOptions( bool asHost ) {
 			
 			if(asHost)
 				NetManager.StartHost (NetManager.defaultListenPortNumber);

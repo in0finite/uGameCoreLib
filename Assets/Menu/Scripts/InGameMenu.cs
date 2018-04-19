@@ -9,9 +9,9 @@ namespace uGameCore.Menu
 		/// In game menu is opened always while non-startup scene is opened - this allows for it to be visible
 		/// even when other menus are opened (pause menu, settings menu, etc).
 		/// </summary>
-		protected override bool IsThisMenuOpened ()
+		protected override bool ShouldThisMenuBeOpened ()
 		{
-			return MenuManager.singleton.IsInGameScene ();
+			return MenuManager.IsInGameScene ();
 		}
 
 	}

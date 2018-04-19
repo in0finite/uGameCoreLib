@@ -99,7 +99,7 @@ namespace uGameCore.Menu {
 
 		public	void	StartServerWithSpecifiedOptions( RectTransform menuObject ) {
 
-			MenuManager.singleton.StartServerWithSpecifiedOptions (true);
+			MenuManager.StartServerWithSpecifiedOptions (true);
 		}
 
 		public	void	ConnectToServerWithParameters() {
@@ -114,30 +114,30 @@ namespace uGameCore.Menu {
 		}
 
 		public	void	QuitToMenu() {
-			MenuManager.singleton.QuitToMenu ();
+			MenuManager.QuitToMainMenu ();
 		}
 
 		public	void	ReturnToGame() {
-			MenuManager.singleton.UnPause ();
+			MenuManager.SwitchToInGameMenu ();
 		}
 
 		public	void	Resign() {
-			MenuManager.singleton.Resign ();
+			MenuManager.Resign ();
 		}
 
 		public	void	OpenMenu( string menuName ) {
-			MenuManager.singleton.Open (menuName);
+			MenuManager.SwitchMenu (menuName);
 		}
 
-		public	void	OpenMenuAndSetItsParentToCurrentMenu( string menu ) {
+		public	void	OpenMenuAndSetItsParentToCurrentMenu( string menuName ) {
 
-			var canvas = MenuManager.FindCanvasByName (menu);
-			if (null == canvas)
+			var menu = MenuManager.FindMenuByName (menuName);
+			if (null == menu)
 				return;
 
-			canvas.GetComponent<Menu> ().parentMenu = MenuManager.singleton.openedMenuName;
+			menu.parentMenu = MenuManager.ActiveMenuName;
 
-			MenuManager.singleton.Open (menu);
+			MenuManager.SwitchMenu (menu);
 		}
 
 		public	void	GoToParent() {

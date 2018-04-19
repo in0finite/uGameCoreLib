@@ -11,26 +11,43 @@ namespace uGameCore.Menu {
 
 		public	bool	disableInputFieldsWhenClosed = false ;
 
-		Canvas	m_canvas = null;
+		private	Canvas	m_canvas = null;
+		public Canvas Canvas { get { return m_canvas; } }
 
-		private	bool	m_wasOpenedLastFrame = false;
+		private	bool	m_isOpened = false;
+		public bool IsOpened { get { return m_isOpened; } }
 
 
-		void Start()
+
+		void Awake ()
 		{
-			m_canvas = GetComponent<Canvas> ();
-
-			m_wasOpenedLastFrame = m_canvas.enabled = this.menuName == MenuManager.singleton.openedMenuName;
-
+			m_canvas = this.GetComponent<Canvas> ();
 
 		}
 
-		void Update() 
+		void Start()
 		{
-			bool isOpenedNow = m_canvas.enabled = this.IsThisMenuOpened() ;
 
-			if (isOpenedNow != m_wasOpenedLastFrame) {
-				// notify other components that the state of this menu has changed
+			bool shouldBeOpened = this.ShouldThisMenuBeOpened ();
+
+			m_isOpened = shouldBeOpened;
+			m_canvas.enabled = shouldBeOpened;
+
+		}
+
+
+		// called from MenuManager
+		internal	void	OnActiveMenuChanged() {
+
+			bool wasOpened = m_isOpened;
+
+			bool isOpenedNow = this.ShouldThisMenuBeOpened ();
+
+			m_isOpened = isOpenedNow;
+			m_canvas.enabled = isOpenedNow;
+
+			if (isOpenedNow != wasOpened) {
+				// notify scripts that the state of this menu has changed
 				if (isOpenedNow) {
 					this.gameObject.BroadcastMessageNoExceptions ("OnMenuOpened");
 				} else {
@@ -38,12 +55,11 @@ namespace uGameCore.Menu {
 				}
 			}
 
-			m_wasOpenedLastFrame = isOpenedNow;
 		}
 
-		protected	virtual	bool	IsThisMenuOpened() {
+		protected	virtual	bool	ShouldThisMenuBeOpened() {
 
-			return this.menuName == MenuManager.singleton.openedMenuName;
+			return this == MenuManager.ActiveMenu;
 
 		}
 
