@@ -17,6 +17,10 @@ namespace uGameCore.Menu {
 			// Save settings.
 
 
+			// reset valid states
+			SettingsMenu.ResetValidStateForAllEntries();
+
+
 			// Obtain all values from menu and see which ones changed.
 
 			var cvarsToChange = new List<CVar> ();
@@ -42,10 +46,10 @@ namespace uGameCore.Menu {
 			}
 
 
-			// Check if all settings are correct, and if they are, save them, otherwise do
-			// nothing.
+			// Check if all settings are correct, and if they are, save them, otherwise show user which settings are not valid.
 
 			var invalidValuesIndexes = SettingsMenu.AreSettingsValid (cvarsToChange, changedValues);
+
 			if (invalidValuesIndexes.Count > 0) {
 				// notify user which settings are invalid
 
@@ -54,7 +58,8 @@ namespace uGameCore.Menu {
 				foreach (var index in invalidValuesIndexes) {
 					int cvarIndex = changedValuesIndexes [index];
 
-					entries [cvarIndex].control.transform.GetComponent<Image> ().color = Color.red;
+					//entries [cvarIndex].control.transform.GetComponent<Image> ().color = Color.red;
+					SettingsMenu.SetEntryValidState( entries [cvarIndex], false );
 				}
 
 			} else {

@@ -14,6 +14,8 @@ namespace uGameCore.Menu {
 			public Text label = null;
 			public CVar cvar = null;
 			public object editedValue = null;
+
+			//internal Color originalImageColor = Color.white;
 		}
 
 
@@ -333,6 +335,12 @@ namespace uGameCore.Menu {
 				entry.label = label;
 				entry.editedValue = editedValue;
 
+				if (create) {
+					// add script which will remember original image color
+					entry.control.transform.gameObject.AddComponentIfDoesntExist<SettingsMenuEntryScript> ();
+				}
+
+
 				yield return entry;
 			}
 
@@ -463,6 +471,28 @@ namespace uGameCore.Menu {
 			}
 
 			return invalidValuesIndexes;
+		}
+
+		public	static	void	SetEntryValidState(Entry entry, bool isValid) {
+
+			if (entry.control != null && entry.control.transform != null) {
+				var image = entry.control.transform.GetComponent<Image> ();
+				if (image) {
+					if (isValid)
+						image.color = entry.control.transform.GetComponent<SettingsMenuEntryScript>().originalImageColor;
+					else
+						image.color = Color.red;
+				}
+			}
+
+		}
+
+		public	static	void	ResetValidStateForAllEntries() {
+
+			foreach(var entry in GetEntries()) {
+				SetEntryValidState (entry, true);
+			}
+
 		}
 
 		public	static CVarDisplayType	GetCVarDisplayType( CVar cvar ) {

@@ -8,6 +8,7 @@ namespace uGameCore.Menu {
 		void OnMenuOpened() {
 
 			SettingsMenu.UpdateMenuBasedOnCVars ();
+			SettingsMenu.ResetValidStateForAllEntries ();
 
 		}
 
