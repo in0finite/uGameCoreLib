@@ -24,6 +24,13 @@ namespace uGameCore.Menu {
 			}
 		}
 
+		[System.Serializable]
+		public class IgnoreMessageInfo {
+			public string text = "";
+			public bool ignoreAllLogTypes = false;
+			public LogType logType = LogType.Log;
+		}
+
 
 		private	static	bool	m_isConsoleOpened = false ;
 		public	static	bool	IsOpened { get { return m_isConsoleOpened; } set { m_isConsoleOpened = value; } }
@@ -62,6 +69,9 @@ namespace uGameCore.Menu {
 
 		private	static	string	m_lastStatsString = "" ;
 
+		public	List<IgnoreMessageInfo>	ignoreMessages = new List<IgnoreMessageInfo> ();
+		public	List<IgnoreMessageInfo>	ignoreMessagesThatStartWith = new List<IgnoreMessageInfo> ();
+
 		private	ConsoleCanvas	consoleCanvas = null;
 		private	ScrollRect	consoleScrollView = null;
 		private	InputField	consoleTextDisplay = null;
@@ -69,6 +79,15 @@ namespace uGameCore.Menu {
 		private	InputField	consoleSubmitInputField = null;
 		private	Text	consoleStatsTextControl = null;
 
+
+
+		Console() {
+
+			// add some default ignored messages
+			this.ignoreMessages.Add(new IgnoreMessageInfo() {text = "HandleTransform no gameObject", ignoreAllLogTypes = true} );
+			this.ignoreMessagesThatStartWith.Add (new IgnoreMessageInfo () {text = "Did not find target for sync message for", ignoreAllLogTypes = true});
+
+		}
 
 		void Awake() {
 
@@ -148,16 +167,31 @@ namespace uGameCore.Menu {
 				return;
 
 
-			if (logStr.StartsWith ("Did not find target for sync message for"))
-				return;
-
-			if (logStr == "HandleTransform no gameObject")
+			// check if this message should be ignored
+			if (ShouldMessageBeIgnored (logStr, type))
 				return;
 
 
 			var logMessage = new LogMessage (logStr, stackTrace, type);
 			m_messagesArrivedThisFrame.AddLast (logMessage);
 
+		}
+
+		public	static	bool	ShouldMessageBeIgnored(string logStr, LogType type) {
+
+			foreach (var im in singleton.ignoreMessages) {
+				if (im.text == logStr && ( im.ignoreAllLogTypes || im.logType == type )) {
+					return true;
+				}
+			}
+
+			foreach (var im in singleton.ignoreMessagesThatStartWith) {
+				if (logStr.StartsWith(im.text) && ( im.ignoreAllLogTypes || im.logType == type )) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		public	static	string	GetRichText( LogMessage logMessage ) {
