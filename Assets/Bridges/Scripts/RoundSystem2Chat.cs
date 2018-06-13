@@ -7,7 +7,8 @@ namespace uGameCore {
 
 		void OnRoundFinished( string winningTeam ) {
 
-			Chat.ChatManager.SendChatMessageToAllPlayersAsServer( "Round ended - winning team: " + winningTeam + "." );
+			Chat.ChatManager.SendChatMessageToAllPlayersAsServer (
+				RoundManagement.RoundSystemEventsLogger.GetTextForLogWhenRoundEnds (winningTeam));
 
 		}
 
