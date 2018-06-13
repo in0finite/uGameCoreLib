@@ -17,7 +17,7 @@ namespace uGameCore {
 		[SyncVar]	private	string	m_team = "" ;
 		public	string Team { get { return m_team; } protected set { m_team = value; } }
 
-		private	bool	m_isSpectator = true ;
+		[SyncVar]	private	bool	m_isSpectator = true ;
 		public	bool	IsSpectator { get { return this.m_isSpectator; } }
 
 		public	bool	resetTeamOnSceneChange = true ;
