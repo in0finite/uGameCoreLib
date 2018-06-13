@@ -64,109 +64,10 @@ namespace uGameCore {
 			
 		}
 
-		// Use this for initialization
 		void Start () {
 			
 
 			Application.runInBackground = true;
-
-		//	this.HideAndLockMouse ();
-
-
-		//	Debug.Log ("Creating editable variables.");
-
-//			CVar var = new CVar ();
-//			var.displayType = CVarDisplayType.String;
-//			var.cfgName = "nick";
-//			var.displayName = "Nick";
-//			var.minLength = PlayerManager.GetMinimumNickLength ();
-//			var.maxLength = PlayerManager.GetMaxmimumNickLength() ;
-//			var.currentString = PlayerManager.GetDefaultLocalPlayerName ();
-//			CVarManager.AddCVar (var, this);
-
-			/*
-			var = new EditableVariable ();
-			var.type = EditableVariableType.FloatSlider;
-			var.name = "camera_offset_x";
-			var.minValue = -5;
-			var.maxValue = 5;
-			var.currentFloat = this.cameraOffset.x;
-			this.AddEditableVariable (var);
-			
-		//	var = new EditableVariable ();
-		//	var.type = EditableVariableType.FloatSlider;
-			var.name = "camera_offset_y";
-		//	var.minValue = -5;
-		//	var.maxValue = 5;
-			var.currentFloat = this.cameraOffset.y;
-			this.AddEditableVariable (var);
-			
-		//	var = new EditableVariable ();
-		//	var.type = EditableVariableType.FloatSlider;
-			var.name = "camera_offset_z";
-		//	var.minValue = -5;
-		//	var.maxValue = 5;
-			var.currentFloat = this.cameraOffset.z;
-			this.AddEditableVariable (var);
-			*/
-			
-//			var = new CVar ();
-//			var.displayType = CVarDisplayType.FloatSlider;
-//			var.cfgName = "fps_max";
-//			var.minValue = 1;
-//			var.maxValue = 100;
-//			var.currentFloat = 60 ;
-//			CVarManager.AddCVar (var, this);
-
-//			var = new CVar ();
-//			var.displayType = CVarDisplayType.FloatSlider;
-//			var.cfgName = "mouse_sensitivity_x";
-//			var.minValue = 0 ;
-//			var.maxValue = 2000 ;
-//			var.currentFloat = this.mouseSensitivityX;
-//			CVarManager.AddCVar (var, this);
-
-//			var = new CVar ();
-//			var.displayType = CVarDisplayType.FloatSlider;
-//			var.cfgName = "mouse_sensitivity_y";
-//			var.minValue = 0 ;
-//			var.maxValue = 2000 ;
-//			var.currentFloat = this.mouseSensitivityY;
-//			CVarManager.AddCVar (var, this);
-
-			/*
-			var = new EditableVariable ();
-			var.type = EditableVariableType.FloatSlider;
-			var.name = "crosshair_offset_x";
-			var.minValue = -100 ;
-			var.maxValue = 100 ;
-			var.currentFloat = 0 ;
-			this.AddEditableVariable (var);
-
-			var = new EditableVariable ();
-			var.type = EditableVariableType.FloatSlider;
-			var.name = "crosshair_offset_y";
-			var.minValue = -100 ;
-			var.maxValue = 100 ;
-			var.currentFloat = -80 ;
-			this.AddEditableVariable (var);
-			*/
-
-//			var = new CVar ();
-//			var.displayType = CVarDisplayType.FloatSlider;
-//			var.cfgName = "Accelerometer minimum horizontal value";
-//			var.minValue = 0 ;
-//			var.maxValue = 1 ;
-//			var.currentFloat = this.minAccelerometerHorizontalValue;
-//			CVarManager.AddCVar (var, this);
-//
-//			var.cfgName = "Accelerometer minimum vertical value";
-//			var.currentFloat = this.minAccelerometerVerticalValue;
-//			CVarManager.AddCVar (var, this);
-//
-//			var.cfgName = "Accelerometer vertical offset";
-//			var.currentFloat = this.accelerometerVerticalOffset;
-//			CVarManager.AddCVar (var, this);
 
 
 			this.fpsStopwatch.Start ();
@@ -178,22 +79,6 @@ namespace uGameCore {
 
 		void Update () {
 			
-
-			/*
-			if (Input.GetKeyDown (KeyCode.Escape)) {
-				if (this.openedMenuType == MenuType.InGame) {
-					this.OpenMenu (MenuType.MainMenu);
-				} else if (this.openedMenuType == MenuType.MainMenu) {
-					if (NetworkStatus.IsClientConnected() || (networkManager.IsServer ())) {
-						this.OpenMenu (MenuType.InGame);
-					}
-				} else if (this.openedMenuType == MenuType.OptionsMenu) {
-					this.OpenMenu (MenuType.MainMenu);
-				}
-
-			}
-			*/
-
 
 			// calculate average fps
 			float timeElapsed = this.fpsStopwatch.ElapsedMilliseconds / 1000f ;
@@ -641,34 +526,6 @@ namespace uGameCore {
 //
 //
 //		}
-
-
-		/*
-		public	void	OpenMenu( MenuType menuType ) {
-
-			if (menuType == MenuType.InGame) {
-				
-				// close console
-				this.isConsoleOpened = false;
-
-			} else {
-				
-
-			}
-
-			this.openedMenuType = menuType;
-
-			this.UpdateMouseLockAndVisibilityState ();
-
-		}
-
-		public	static	void	OpenMenu( string menuPath ) {
-
-			singleton.OpenMenu (MenuType.Other);
-
-			openedMenuStringPath = menuPath;
-		}
-		*/
 
 
 		public	static	bool	CanGameObjectsReadUserInput() {
