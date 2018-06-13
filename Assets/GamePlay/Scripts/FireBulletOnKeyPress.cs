@@ -25,10 +25,12 @@ namespace uGameCore.GamePlay.Projectiles {
 				m_timeSinceFired += Time.deltaTime;
 
 				if (Input.GetButton (this.keyName)) {
-					if (m_timeSinceFired >= this.fireInterval) {
-						// fire
-						this.Fire (this.transform.position + this.transform.forward * 3, this.transform.rotation);
-						m_timeSinceFired = 0;
+					if (GameManager.CanGameObjectsReadUserInput ()) {
+						if (m_timeSinceFired >= this.fireInterval) {
+							// fire
+							this.Fire (this.transform.position + this.transform.forward * 3, this.transform.rotation);
+							m_timeSinceFired = 0;
+						}
 					}
 				}
 			}

@@ -13,7 +13,9 @@ namespace uGameCore.GamePlay
 		void Update() {
 
 			if (this.IsLocalPlayer ()) {
-				this.transform.Rotate (Vector3.up, Input.GetAxisRaw ("Mouse X") * this.speed * Time.deltaTime);
+				if (GameManager.CanGameObjectsReadUserInput ()) {
+					this.transform.Rotate (Vector3.up, Input.GetAxisRaw ("Mouse X") * this.speed * Time.deltaTime);
+				}
 			}
 
 		}
