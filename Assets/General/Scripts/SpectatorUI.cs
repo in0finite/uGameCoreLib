@@ -37,13 +37,15 @@ namespace uGameCore
 				string text = "";
 
 				var co = Spectator.GetSpectatingGameObject ().GetComponent<ControllableObject> ();
-				if(co != null) {
+				if (co != null) {
 					var player = co.playerOwner;
 					if (player != null) {
 						text = player.playerName + " ";
 						if (player.Team != "")
 							text += "(" + player.Team + ") ";
 						text += "<color=orange>[" + player.health + "]</color>";
+					} else {
+					//	Debug.LogWarning ("Spectated controllable object has no player owner");
 					}
 				}
 

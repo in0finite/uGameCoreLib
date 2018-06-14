@@ -74,6 +74,19 @@ namespace uGameCore {
 		}
 
 
+		public	override	void	OnStartClient() {
+
+			base.OnStartClient ();
+
+			if (!NetworkStatus.IsServer ()) {
+				if (this.playerOwnerGameObject)
+					this.playerOwner = this.playerOwnerGameObject.GetComponent<Player> ();
+				else
+					this.playerOwner = null;
+			}
+
+		}
+
 		public	override	void	OnStartLocalPlayer() {
 
 			base.OnStartLocalPlayer ();
