@@ -48,9 +48,27 @@ namespace uGameCore {
 				// error
 				// multiple instances of singleton object
 
-				Debug.LogError ("Multiple instances of singleton object detected. The reasons could be:\n" +
+				Debug.LogError (
+					"Multiple instances of singleton object detected. The reasons could be:\n" +
 					"- startup scene is loaded more than once\n" +
-					"- you have multiple instances of this game object");
+					"- you created singleton object in non-startup scene\n" +
+					"- you manually instantiated singleton object from script\n" +
+					"Singleton objects should only be created in startup scene (first scene in build settings)."
+				);
+
+				Debug.LogError ("Quitting");
+				ExitApplication ();
+
+				return;
+			}
+
+			var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene ();
+			if (scene.buildIndex != 0) {
+				// error
+				// game manager created in non-startup scene
+
+				Debug.LogError("Game manager created in non-startup scene. It must be created only in startup " +
+					"scene (first scene in build settings).");
 
 				Debug.LogError ("Quitting");
 				ExitApplication ();
